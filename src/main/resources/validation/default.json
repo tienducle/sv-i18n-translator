@@ -1,0 +1,11 @@
+{
+  "rejectionList": [],
+  "countSpecialCharacters": "@$#%^€<>()",
+  "regexValidationList": [
+    {
+      "id": "QUOTES",
+      "pattern": "\"",
+      "description": "Check if double quotes are equal in both texts. Single quotes are sometimes used in dialogue, but can differ in other languages, so we can't check for them to be equal in the translated text."
+    }
+  ]
+}
