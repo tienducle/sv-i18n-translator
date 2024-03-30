@@ -1,0 +1,71 @@
+{
+  "rejectionList": [
+    "hallo dort",
+    "hallo, dort",
+    "hallo herr.",
+    "hallo, herr."
+  ],
+  "countSpecialCharacters": "@$#%^€<>()",
+  "regexValidationList": [
+    {
+      "id": "QUOTES",
+      "pattern": "\"",
+      "description": "Check for double quotes. Single quotes are sometimes used in dialogue, but can differ in other languages, so we can't check for them to be equal in the translated text."
+    },
+    {
+      "id": "PORTRAIT_SWITCH_COMMAND_PATTERN_1",
+      "pattern": "#*\\$\\w+#\\$\\w+#",
+      "description": "Check for portrait switch command ($0#$e#, $a#$1#, etc.)"
+    },
+    {
+      "id": "PORTRAIT_SWITCH_COMMAND_PATTERN_2",
+      "pattern": "#\\$\\w+#",
+      "description": "Check for portrait switch command (#$0#, #$a#, etc.)"
+    },
+    {
+      "id": "PORTRAIT_SWITCH_COMMAND_INDEX_PATTERN",
+      "pattern": "\\$\\d+",
+      "description": "Check for indexed portrait switch command ($0, $1, $2, etc.)"
+    },
+    {
+      "id": "PORTRAIT_SWITCH_COMMAND_NEUTRAL_PATTERN",
+      "pattern": "\\$neutral",
+      "description": "$neutral"
+    },
+    {
+      "id": "PORTRAIT_SWITCH_COMMAND_HAPPY_PATTERN",
+      "pattern": "\\$h",
+      "description": "$h"
+    },
+    {
+      "id": "PORTRAIT_SWITCH_COMMAND_SAD_PATTERN",
+      "pattern": "\\$s",
+      "description": "$s"
+    },
+    {
+      "id": "PORTRAIT_SWITCH_COMMAND_UNIQUE_PATTERN",
+      "pattern": "\\$u",
+      "description": "$u"
+    },
+    {
+      "id": "PORTRAIT_SWITCH_COMMAND_LOVE_PATTERN",
+      "pattern": "\\$l",
+      "description": "$l"
+    },
+    {
+      "id": "PORTRAIT_SWITCH_COMMAND_ANGRY_PATTERN",
+      "pattern": "\\$a",
+      "description": "$a"
+    },
+    {
+      "id": "DIALOGUE_COMMAND_QUESTION_PATTERN",
+      "pattern": "\\$q\\s-*\\d+[/\\d]*",
+      "description": "$q -1 or $q 1000/1001 etc."
+    },
+    {
+      "id": "DIALOGUE_COMMAND_RESPONSE_PATTERN",
+      "pattern": "\\$r\\s-*\\d+[\\s\\d]*",
+      "description": "$r 1000 50 or $r 1000 50 1001 0 etc."
+    }
+  ]
+}
