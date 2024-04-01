@@ -2,6 +2,7 @@ package com.tle.i18n.translator;
 
 import com.tle.i18n.translator.adapter.translation.TranslationAdapter;
 import com.tle.i18n.translator.adapter.translation.manual.ManualTranslationAdapter;
+import com.tle.i18n.translator.adapter.translation.ollama.OllamaTranslationAdapter;
 import com.tle.i18n.translator.adapter.translation.openai.OpenAITranslationAdapter;
 import com.tle.i18n.translator.adapter.translation.openai.OpenAITranslationAdapterConfiguration;
 import com.tle.i18n.translator.adapter.validation.DefaultValidationAdapter;
@@ -36,11 +37,27 @@ public class Config
         return runModes;
     }
 
+    /*
+     * Translation Adapter
+     */
+
     @Bean
     @ConditionalOnProperty( value = "translation.adapter", havingValue = "Manual" )
     public ManualTranslationAdapter manualTranslationAdapter()
     {
         return new ManualTranslationAdapter();
+    }
+
+    @Bean
+    @ConditionalOnProperty( value = "translation.adapter", havingValue = "Ollama" )
+    public TranslationAdapter ollamaTranslationAdapter( @Value( "${translation.adapter.ollama.scheme:http}" ) String scheme,
+                                                        @Value( "${translation.adapter.ollama.host:localhost}" ) String host,
+                                                        @Value( "${translation.adapter.ollama.port:11434}" ) int port,
+                                                        @Value( "${translation.adapter.ollama.model:llama2}" ) String model,
+                                                        @Value( "${translation.adapter.ollama.chat.systemMessage:}" ) String systemMessage
+                                                      )
+    {
+        return new OllamaTranslationAdapter( scheme, host, port, model, systemMessage );
     }
 
     @Bean
