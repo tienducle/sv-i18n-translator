@@ -1,6 +1,7 @@
 package com.tle.i18n.translator;
 
 import com.tle.i18n.translator.adapter.translation.TranslationAdapter;
+import com.tle.i18n.translator.adapter.translation.deepl.DeepLTranslationAdapter;
 import com.tle.i18n.translator.adapter.translation.manual.ManualTranslationAdapter;
 import com.tle.i18n.translator.adapter.translation.ollama.OllamaTranslationAdapter;
 import com.tle.i18n.translator.adapter.translation.openai.OpenAITranslationAdapter;
@@ -8,9 +9,8 @@ import com.tle.i18n.translator.adapter.translation.openai.OpenAITranslationAdapt
 import com.tle.i18n.translator.adapter.validation.DefaultValidationAdapter;
 import com.tle.i18n.translator.adapter.validation.ValidationAdapter;
 import com.tle.i18n.translator.adapter.validation.stardewvalley.StardewValleyValidationAdapter;
-import com.tle.i18n.translator.step.*;
-import com.tle.openai.OpenAIClient;
-import com.tle.openai.model.chat.ChatCompletionConfiguration;
+import com.tle.i18n.translator.step.ReformatStep;
+import com.tle.i18n.translator.step.SyncStep;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -46,6 +46,17 @@ public class Config
     public ManualTranslationAdapter manualTranslationAdapter()
     {
         return new ManualTranslationAdapter();
+    }
+
+    @Bean
+    @ConditionalOnProperty( value = "translation.adapter", havingValue = "DeepL" )
+    public TranslationAdapter deepLTranslationAdapter(
+            @Value( "${translation.adapter.deepl.apiKey:}" ) String apiKey,
+            @Value( "${translation.adapter.deepl.proTier:false}" ) boolean proTier,
+            @Value( "${translation.adapter.deepl.targetLanguage:}" ) String targetLanguage
+                                                     )
+    {
+        return new DeepLTranslationAdapter( apiKey, proTier, targetLanguage );
     }
 
     @Bean
