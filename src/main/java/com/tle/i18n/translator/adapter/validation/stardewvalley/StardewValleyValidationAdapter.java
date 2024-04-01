@@ -17,7 +17,7 @@ public class StardewValleyValidationAdapter extends ValidationAdapter
     @Override
     public boolean accept( String originalText, String translatedText, boolean omitAcceptMessage )
     {
-        if ( !super.accept( originalText, translatedText, omitAcceptMessage ) )
+        if ( !super.accept( originalText, translatedText, true ) )
         {
             return false;
         }
@@ -29,6 +29,7 @@ public class StardewValleyValidationAdapter extends ValidationAdapter
             return false;
         }
 
+        LoggerUtils.printDebugInfo( LOGGER, originalText, translatedText, "Accepted" );
         return true;
     }
 }

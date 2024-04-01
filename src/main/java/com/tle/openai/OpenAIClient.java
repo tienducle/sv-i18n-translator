@@ -29,7 +29,7 @@ public class OpenAIClient extends AbstractApiClient
 
     private final EncodingRegistry registry = Encodings.newDefaultEncodingRegistry();
 
-    public OpenAIClient(String bearerToken )
+    public OpenAIClient( String bearerToken )
     {
         LOGGER.info( "Initializing ChatGptClient with Bearer " + bearerToken.substring( 0, 4 ) + "..." );
         this.bearerToken = bearerToken;

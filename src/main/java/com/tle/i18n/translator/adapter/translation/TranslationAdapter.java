@@ -25,7 +25,7 @@ public abstract class TranslationAdapter
     }
 
     /**
-     * Translates the text in the given TranslationRequest object and returns a {@link TranslationResult}
+     * Translates the text in the given {@link TranslationRequest} object and returns a {@link TranslationResult}
      * containing one or more translated texts.
      * <p></p>
      * Depending on {@link TranslationResult#hasError()} and {@link TranslationResult#isRetryable()},
