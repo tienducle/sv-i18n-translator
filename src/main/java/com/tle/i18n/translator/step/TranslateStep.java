@@ -86,12 +86,15 @@ public class TranslateStep extends Step
             LOGGER.info( String.format( "Translating '%s'", key ) );
 
             final String translatedText = getTranslatedTextWithRetry( new TranslationRequest( key, originalText ) );
-
-            if ( translatedText == null || validationAdapter.containsError( translatedText ) )
+            if ( translatedText != null && !validationAdapter.containsError( translatedText ) )
+            {
+                translatedFileLines.put( key, translatedText );
+            }
+            else
             {
                 LOGGER.error( String.format( "Gave up on '%s': '%s'", key, originalText ) );
+                translatedFileLines.put( key, ValidationAdapter.TRANSLATION_ERROR_VALUE + " " + originalText );
             }
-            translatedFileLines.put( key, translatedText );
             FileUtils.flushToFile( translatedFile, translatedFileLines );
         }
 
@@ -104,6 +107,12 @@ public class TranslateStep extends Step
      */
     public String getTranslatedTextWithRetry( TranslationRequest translationRequest )
     {
+        if ( translationRequest.getTotalAttempts() >= translationAdapter.getMaxAttempts() )
+        {
+            LOGGER.error( "Max attempts to translate text reached" );
+            return null;
+        }
+
         final TranslationResult translationResult = this.translationAdapter.translate( translationRequest );
 
         if ( translationResult.hasError() )
