@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -19,7 +20,8 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@Component( "TranslateStep" )
+@Component
+@Lazy
 public class TranslateStep extends Step
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( TranslateStep.class );
@@ -37,12 +39,12 @@ public class TranslateStep extends Step
     private final TranslationAdapter translationAdapter;
     private final ValidationAdapter validationAdapter;
 
-    @Autowired
     public TranslateStep( TranslationAdapter translationAdapter,
                           ValidationAdapter validationAdapter,
                           @Value( "${step.translate.originalFilePath}" ) String originalFilePath,
                           @Value( "${step.translate.translatedFilePath}" ) String translatedFilePath )
     {
+        LOGGER.info( "Initializing TranslateStep" );
         this.translationAdapter = translationAdapter;
         this.validationAdapter = validationAdapter;
         this.originalFile = new File( originalFilePath );
@@ -51,6 +53,7 @@ public class TranslateStep extends Step
         objectMapper.configure( JsonReadFeature.ALLOW_TRAILING_COMMA.mappedFeature(), true );
         objectMapper.configure( JsonReadFeature.ALLOW_JAVA_COMMENTS.mappedFeature(), true );
         objectMapper.configure( JsonReadFeature.ALLOW_YAML_COMMENTS.mappedFeature(), true );
+        LOGGER.info( "Initialized TranslateStep" );
     }
 
     @Override
@@ -86,15 +89,16 @@ public class TranslateStep extends Step
             LOGGER.info( String.format( "Translating '%s'", key ) );
 
             final String translatedText = getTranslatedTextWithRetry( new TranslationRequest( key, originalText ) );
-            if ( translatedText != null && !validationAdapter.containsError( translatedText ) )
+            if ( translatedText == null )
             {
-                translatedFileLines.put( key, translatedText );
-            }
-            else
-            {
-                LOGGER.error( String.format( "Gave up on '%s': '%s'", key, originalText ) );
+                LOGGER.error( String.format( "Fatal error while translating '%s'", key ) );
                 translatedFileLines.put( key, ValidationAdapter.TRANSLATION_ERROR_VALUE + " " + originalText );
             }
+            else if ( validationAdapter.containsError( translatedText ) )
+            {
+                LOGGER.error( String.format( "Gave up on '%s': '%s'", key, originalText ) );
+            }
+            translatedFileLines.put( key, translatedText );
             FileUtils.flushToFile( translatedFile, translatedFileLines );
         }
 
@@ -110,11 +114,12 @@ public class TranslateStep extends Step
         if ( translationRequest.getTotalAttempts() >= translationAdapter.getMaxAttempts() )
         {
             LOGGER.error( "Max attempts to translate text reached" );
-            return null;
+            return ValidationAdapter.TRANSLATION_ERROR_VALUE + " " + translationRequest.getOriginalText();
         }
 
         final TranslationResult translationResult = this.translationAdapter.translate( translationRequest );
 
+        // request failed
         if ( translationResult.hasError() )
         {
             // can be retried?
@@ -124,7 +129,7 @@ public class TranslateStep extends Step
             }
 
             LOGGER.error( String.format( "Final error: %s", translationResult.getErrorMessage() ) );
-            return null;
+            return ValidationAdapter.TRANSLATION_ERROR_VALUE + " " + translationRequest.getOriginalText();
         }
 
         final String translatedText = selectTranslatedText( translationResult );

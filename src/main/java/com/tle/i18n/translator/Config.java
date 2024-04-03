@@ -2,6 +2,7 @@ package com.tle.i18n.translator;
 
 import com.tle.i18n.translator.adapter.translation.TranslationAdapter;
 import com.tle.i18n.translator.adapter.translation.deepl.DeepLTranslationAdapter;
+import com.tle.i18n.translator.adapter.translation.deepl.DeepLTranslationAdapterConfiguration;
 import com.tle.i18n.translator.adapter.translation.manual.ManualTranslationAdapter;
 import com.tle.i18n.translator.adapter.translation.ollama.OllamaTranslationAdapter;
 import com.tle.i18n.translator.adapter.translation.openai.OpenAITranslationAdapter;
@@ -9,28 +10,26 @@ import com.tle.i18n.translator.adapter.translation.openai.OpenAITranslationAdapt
 import com.tle.i18n.translator.adapter.validation.DefaultValidationAdapter;
 import com.tle.i18n.translator.adapter.validation.ValidationAdapter;
 import com.tle.i18n.translator.adapter.validation.stardewvalley.StardewValleyValidationAdapter;
-import com.tle.i18n.translator.step.ReformatStep;
-import com.tle.i18n.translator.step.SyncStep;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 
 import java.util.List;
 
 @Configuration
-@PropertySource( value = { "classpath:application.properties" } )
+@Lazy
+@PropertySources( value = {
+        @PropertySource( value = "classpath:local.properties", ignoreResourceNotFound = true ),
+        @PropertySource( value = "classpath:application.properties" ),
+} )
 public class Config
 {
     @Value( "${runModes}" )
     private List<RunMode> runModes;
-
-    @Value( "${translation.adapter:Manual}" )
-    private String translationAdapter;
-
-    @Value( "${validation.adapter:Default}" )
-    private String validationAdapter;
 
     public List<RunMode> getRunModes()
     {
@@ -40,23 +39,24 @@ public class Config
     /*
      * Translation Adapter
      */
-
     @Bean
     @ConditionalOnProperty( value = "translation.adapter", havingValue = "Manual" )
-    public ManualTranslationAdapter manualTranslationAdapter()
+    public TranslationAdapter manualTranslationAdapter()
     {
         return new ManualTranslationAdapter();
     }
 
     @Bean
     @ConditionalOnProperty( value = "translation.adapter", havingValue = "DeepL" )
-    public TranslationAdapter deepLTranslationAdapter(
-            @Value( "${translation.adapter.deepl.apiKey:}" ) String apiKey,
-            @Value( "${translation.adapter.deepl.proTier:false}" ) boolean proTier,
-            @Value( "${translation.adapter.deepl.targetLanguage:}" ) String targetLanguage
-                                                     )
+    @Lazy
+    public TranslationAdapter deepLTranslationAdapter( @Value( "${translation.adapter.deepl.apiKey:}" ) String apiKey,
+                                                       @Value( "${translation.adapter.deepl.proTier:false}" ) boolean proTier,
+                                                       @Value( "${translation.adapter.deepl.sourceLanguage:}" ) String sourceLanguage,
+                                                       @Value( "${translation.adapter.deepl.targetLanguage:}" ) String targetLanguage,
+                                                       @Value( "${translation.adapter.deepl.formality:}" ) String formality,
+                                                       @Value( "${translation.adapter.deepl.glossaryId:}" ) String glossaryId )
     {
-        return new DeepLTranslationAdapter( apiKey, proTier, targetLanguage );
+        return new DeepLTranslationAdapter( new DeepLTranslationAdapterConfiguration( apiKey, proTier, sourceLanguage, targetLanguage, formality, glossaryId ) );
     }
 
     @Bean
@@ -91,6 +91,9 @@ public class Config
         );
     }
 
+    /*
+     * Validation Adapter
+     */
     @Bean
     @ConditionalOnProperty( value = "validation.adapter", havingValue = "Default" )
     public ValidationAdapter defaultValidationAdapter( @Value( "${validation.adapter.configurationFile:}" ) String validationConfigurationFileName )
@@ -104,19 +107,4 @@ public class Config
     {
         return new StardewValleyValidationAdapter( validationConfigurationFileName );
     }
-
-    @Bean
-    public SyncStep syncStep( @Value( "${step.sync.originalFilePath}" ) String originalFilePath,
-                              @Value( "${step.sync.translatedFilePath}" ) String translatedFilePath )
-    {
-        return new SyncStep( originalFilePath, translatedFilePath );
-    }
-
-    @Bean
-    public ReformatStep reformatStep( @Value( "${step.reformat.originalFilePath}" ) String originalFilePath,
-                                      @Value( "${step.reformat.translatedFilePath}" ) String translatedFilePath )
-    {
-        return new ReformatStep( originalFilePath, translatedFilePath );
-    }
-
 }

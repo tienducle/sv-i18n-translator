@@ -2,17 +2,22 @@ package com.tle.i18n.translator.adapter.translation;
 
 import com.tle.i18n.translator.translation.TranslationRequest;
 import com.tle.i18n.translator.translation.TranslationResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-@Component( "TranslationAdapter" )
+@Component
 public abstract class TranslationAdapter
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger( TranslationAdapter.class );
+
     @Value( "${translation.adapter.maxAttempts:4}" )
     private int maxAttempts;
 
     public TranslationAdapter()
     {
+        LOGGER.info( "Initialized TranslationAdapter" );
     }
 
     /**

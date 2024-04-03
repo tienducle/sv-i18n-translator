@@ -1,10 +1,11 @@
 # Local run scripts
 local-*.sh
 *.log
+local.properties
 
 out
 target/**/*.*
-!target/sdv-i18n-translator-*.jar*
+!target/sv-i18n-translator-*.jar*
 
 ### IntelliJ IDEA ###
 .idea

@@ -13,14 +13,16 @@ public class DeepLTranslationAdapter extends TranslationAdapter
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( DeepLTranslationAdapter.class );
 
+    private final DeepLTranslationAdapterConfiguration configuration;
+
     private final DeepLClient deepLClient;
 
-    private final String targetLanguage;
-
-    public DeepLTranslationAdapter( String apiKey, boolean proTier, String targetLanguage )
+    public DeepLTranslationAdapter( DeepLTranslationAdapterConfiguration configuration )
     {
-        this.deepLClient = new DeepLClient( apiKey, proTier );
-        this.targetLanguage = targetLanguage;
+        LOGGER.info( "Initializing DeepLTranslationAdapter" );
+        this.configuration = configuration;
+        this.deepLClient = new DeepLClient( configuration.getApiKey(), configuration.isProTier() );
+        LOGGER.info( "Initialized DeepLTranslationAdapter" );
     }
 
     @Override
@@ -62,6 +64,11 @@ public class DeepLTranslationAdapter extends TranslationAdapter
      */
     private TranslateRequest createTranslationRequest( String originalText )
     {
-        return new TranslateRequest( this.targetLanguage, originalText );
+        return new TranslateRequest( configuration.getSourceLanguage(),
+                                     configuration.getTargetLanguage(),
+                                     originalText,
+                                     configuration.getFormality(),
+                                     configuration.getGlossaryId()
+        );
     }
 }

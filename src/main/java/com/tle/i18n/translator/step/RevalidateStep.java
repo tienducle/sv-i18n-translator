@@ -4,8 +4,8 @@ import com.tle.i18n.translator.adapter.validation.ValidationAdapter;
 import com.tle.i18n.translator.util.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -17,12 +17,13 @@ import java.util.Map;
  * Revalidates the translated text by comparing it with the original text
  * and adding an <ERROR> tag to the translated text if it does not pass the validation.
  */
-@Component( "RevalidateStep" )
+@Component
+@Lazy
 public class RevalidateStep extends Step
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( RevalidateStep.class );
 
-    private final ValidationAdapter validationAdapter;
+    private ValidationAdapter validationAdapter;
 
     @Value( "${step.revalidate.originalFilePath}" )
     private String originalFilePath;
@@ -36,14 +37,16 @@ public class RevalidateStep extends Step
     // Output file containing the translated text
     private final File translatedFile;
 
-    @Autowired
-    public RevalidateStep( ValidationAdapter validationAdapter,
-                           @Value( "${step.translate.originalFilePath}" ) String originalFilePath,
-                           @Value( "${step.translate.translatedFilePath}" ) String translatedFilePath )
+    public RevalidateStep(
+            ValidationAdapter validationAdapter,
+            @Value( "${step.translate.originalFilePath}" ) String originalFilePath,
+            @Value( "${step.translate.translatedFilePath}" ) String translatedFilePath )
     {
+        LOGGER.info( "Initializing RevalidateStep" );
         this.validationAdapter = validationAdapter;
         this.originalFile = new File( originalFilePath );
         this.translatedFile = new File( translatedFilePath );
+        LOGGER.info( "Initialized RevalidateStep" );
     }
 
     @Override

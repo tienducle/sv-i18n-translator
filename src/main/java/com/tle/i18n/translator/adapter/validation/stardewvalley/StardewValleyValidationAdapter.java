@@ -12,6 +12,7 @@ public class StardewValleyValidationAdapter extends ValidationAdapter
     public StardewValleyValidationAdapter( String validationConfigurationFileName )
     {
         super( validationConfigurationFileName );
+        LOGGER.info( "Initialized StardewValleyValidationAdapter" );
     }
 
     @Override
@@ -29,7 +30,11 @@ public class StardewValleyValidationAdapter extends ValidationAdapter
             return false;
         }
 
-        LoggerUtils.printDebugInfo( LOGGER, originalText, translatedText, "Accepted" );
+        if ( !omitAcceptMessage )
+        {
+            LoggerUtils.printDebugInfo( LOGGER, originalText, translatedText, "Accepted" );
+        }
+
         return true;
     }
 }

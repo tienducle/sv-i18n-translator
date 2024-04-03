@@ -4,6 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.tle.i18n.translator.util.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +19,8 @@ import java.util.Map;
  * Synchronizes the original and translated files by adding missing translation keys to the translated file.
  * If a translation key is missing in the translated file, it will be added with <ERROR><MISSING> tags.
  */
+@Component( "SyncStep" )
+@Lazy
 public class SyncStep extends Step
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( SyncStep.class );
@@ -26,10 +32,13 @@ public class SyncStep extends Step
     // File containing the translated text
     private final File translatedFile;
 
-    public SyncStep( String originalFilePath, String translatedFilePath )
+    public SyncStep( @Value( "${step.sync.originalFilePath}" ) String originalFilePath,
+                     @Value( "${step.sync.translatedFilePath}" ) String translatedFilePath )
     {
+        LOGGER.info( "Initializing SyncStep" );
         this.originalFile = new File( originalFilePath );
         this.translatedFile = new File( translatedFilePath );
+        LOGGER.info( "Initialized SyncStep" );
     }
 
     @Override

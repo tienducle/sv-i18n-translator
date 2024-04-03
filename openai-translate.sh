@@ -31,4 +31,4 @@ java \
 -Dtranslation.adapter.openai.chat.systemMessage="Translate the input text to German.\nRespond only with the translated text.\nIf you can not translate the input, or you are unsure, just respond with <ERROR>." \
 -Dvalidation.adapter.configurationFile=stardewvalley.json \
 -Dvalidation.adapter=StardewValley \
--jar out/artifacts/sdv_i18n_translator_jar/sdv-i18n-translator.jar
+-jar out/artifacts/sv_i18n_translator_jar/sv-i18n-translator.jar

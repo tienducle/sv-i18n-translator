@@ -28,12 +28,14 @@ public class OpenAITranslationAdapter extends TranslationAdapter
 
     public OpenAITranslationAdapter( OpenAITranslationAdapterConfiguration config )
     {
+        LOGGER.info( "Initializing OpenAITranslationAdapter" );
         this.config = config;
         this.openAIClient = new OpenAIClient( config.getApiKey() );
 
         this.systemMessage = new Message();
         systemMessage.setRole( "system" );
         systemMessage.setContent( config.getSystemMessageText() );
+        LOGGER.info( "Initialized OpenAITranslationAdapter" );
     }
 
     @Override

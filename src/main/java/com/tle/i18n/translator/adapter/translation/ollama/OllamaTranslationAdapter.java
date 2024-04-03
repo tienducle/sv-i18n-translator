@@ -23,11 +23,13 @@ public class OllamaTranslationAdapter extends TranslationAdapter
 
     public OllamaTranslationAdapter( String scheme, String host, int port, String model, String systemMessage )
     {
+        LOGGER.info( "Initializing OllamaTranslationAdapter" );
         this.ollamaClient = new OllamaClient( scheme, host, port );
         this.model = model;
         this.systemMessage = new Message();
         this.systemMessage.setRole( "system" );
         this.systemMessage.setContent( systemMessage );
+        LOGGER.info( "Initialized OllamaTranslationAdapter" );
     }
 
     @Override
@@ -45,6 +47,21 @@ public class OllamaTranslationAdapter extends TranslationAdapter
             LOGGER.warn( "Retrying" );
         }
 
+        StringBuilder sb = new StringBuilder();
+        sb.append( "[INST]" );
+        sb.append( " " );
+        sb.append( systemMessage.getContent() );
+        sb.append( " " );
+        sb.append( "[/INST]" );
+        sb.append( "\n" );
+        sb.append( "Okay please provide your text for translation." );
+        sb.append( "\n" );
+        sb.append( "[INST]" );
+        sb.append( " " );
+        sb.append( originalText );
+        sb.append( " " );
+        sb.append( "[/INST]" );
+
         final ChatCompletionResponse chatCompletionResponse = ollamaClient.postChatCompletion( createTranslationRequest( originalText ) );
 
         // OpenAI request failed
@@ -57,7 +74,7 @@ public class OllamaTranslationAdapter extends TranslationAdapter
 
         // OpenAI request succeeded
         final TranslationResult translationResult = new TranslationResult( translationRequest );
-        translationResult.addTranslatedText( chatCompletionResponse.getMessage().getContent() );
+        translationResult.addTranslatedText( chatCompletionResponse.getMessage().getContent().trim() );
         return translationResult;
     }
 
