@@ -2,6 +2,9 @@ package com.tle.i18n.translator.step;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -13,6 +16,8 @@ import java.io.OutputStreamWriter;
 /**
  * Re-formats the translated file to match the original file in terms of comments and line breaks.
  */
+@Component
+@Lazy
 public class ReformatStep extends Step
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( ReformatStep.class );
@@ -23,10 +28,13 @@ public class ReformatStep extends Step
     // File containing the translated text
     private final File translatedFile;
 
-    public ReformatStep( String originalFilePath, String translatedFilePath )
+    public ReformatStep( @Value( "${step.reformat.originalFilePath}" ) String originalFilePath,
+                         @Value( "${step.reformat.translatedFilePath}" ) String translatedFilePath )
     {
+        LOGGER.info( "Initializing ReformatStep" );
         this.originalFile = new File( originalFilePath );
         this.translatedFile = new File( translatedFilePath );
+        LOGGER.info( "Initialized ReformatStep" );
     }
 
     @Override

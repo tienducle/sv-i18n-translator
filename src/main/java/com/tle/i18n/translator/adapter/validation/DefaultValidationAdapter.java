@@ -1,11 +1,15 @@
 package com.tle.i18n.translator.adapter.validation;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DefaultValidationAdapter extends ValidationAdapter
 {
-    public DefaultValidationAdapter( @Value( "${validation.adapter.configurationFile}" ) String validationConfigurationFileName )
+    private static final Logger LOGGER = LoggerFactory.getLogger( DefaultValidationAdapter.class );
+
+    public DefaultValidationAdapter( String validationConfigurationFileName )
     {
         super( validationConfigurationFileName );
+        LOGGER.info( "Initialized DefaultValidationAdapter" );
     }
 }

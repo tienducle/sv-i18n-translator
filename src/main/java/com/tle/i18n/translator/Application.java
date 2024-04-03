@@ -1,10 +1,13 @@
 package com.tle.i18n.translator;
 
-import com.tle.i18n.translator.step.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.tle.i18n.translator.step.ReformatStep;
+import com.tle.i18n.translator.step.RevalidateStep;
+import com.tle.i18n.translator.step.SyncStep;
+import com.tle.i18n.translator.step.TranslateStep;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
 
 import java.io.IOException;
@@ -21,12 +24,11 @@ public class Application
     private final ReformatStep reformatStep;
     private final RevalidateStep revalidateStep;
 
-    @Autowired
     public Application( Config config,
-                        TranslateStep translateStep,
-                        SyncStep syncStep,
-                        ReformatStep reformatStep,
-                        RevalidateStep revalidateStep )
+                        @Lazy TranslateStep translateStep,
+                        @Lazy SyncStep syncStep,
+                        @Lazy ReformatStep reformatStep,
+                        @Lazy RevalidateStep revalidateStep )
     {
         this.config = config;
         this.translateStep = translateStep;

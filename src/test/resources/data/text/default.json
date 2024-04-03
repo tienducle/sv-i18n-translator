@@ -1,6 +1,8 @@
 {
-  "Character.ShortText.1": "...",
+  "Character.ShortText.1": "Hey there.",
   "Character.ShortText.2": "Hey.",
   "Character.ShortText.3": "Thank you.",
-  "Character.Dialogue.1": "Hey, are you new here in Stardew Valley?$0#$e#I haven't seen you around before.$0#$e#...$0#$e#Uhh. Alright. See ya later then?$2#$e#Bye, @.$0#$e#%He went away."
+  "Character.HeyThere.1": "Hey there, @.#$b#...#$b#Okay, well we don't talk much these days, huh?.$1",
+  "Character.Dialogue.1": "Hey, are you new here in Stardew Valley?$0#$e#I haven't seen you around before.$0#$e#...$0#$e#Uhh. Alright. See ya later then?$2#$e#Bye, @.$0#$e#%He went away.",
+  "Character.Dialogue.2": "Oh! Didn't see you there, @.#$b#How can I help you today?#$b#We got a fresh shipment yesterday, so we have a lot of new items in stock.$0"
 }

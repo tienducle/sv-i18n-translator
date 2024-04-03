@@ -6,12 +6,16 @@ import com.tle.i18n.translator.adapter.validation.configuration.ValidationConfig
 import com.tle.i18n.translator.util.LoggerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public abstract class ValidationAdapter
 {
@@ -25,6 +29,7 @@ public abstract class ValidationAdapter
 
     public ValidationAdapter( String validationConfigurationFileName )
     {
+        LOGGER.info( "Reading validation configuration file: " + validationConfigurationFileName );
         try
         {
             validationConfiguration = objectMapper.readValue( getClass().getClassLoader()
@@ -190,8 +195,8 @@ public abstract class ValidationAdapter
     {
         final Pattern pattern = regexValidation.getPattern();
         final String patternName = regexValidation.getId();
-        final List<MatchResult> originalTextResult = pattern.matcher( originalText ).results().toList();
-        final List<MatchResult> translatedTextResult = pattern.matcher( translatedText ).results().toList();
+        final List<MatchResult> originalTextResult = pattern.matcher( originalText ).results().collect( Collectors.toList() );
+        final List<MatchResult> translatedTextResult = pattern.matcher( translatedText ).results().collect( Collectors.toList() );
 
         if ( originalTextResult.size() != translatedTextResult.size() )
         {
