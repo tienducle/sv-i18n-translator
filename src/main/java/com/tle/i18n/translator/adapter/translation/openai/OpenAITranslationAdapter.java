@@ -35,6 +35,8 @@ public class OpenAITranslationAdapter extends TranslationAdapter
         this.systemMessage = new Message();
         systemMessage.setRole( "system" );
         systemMessage.setContent( config.getSystemMessageText() );
+        LOGGER.info( "System message:" );
+        LOGGER.info( config.getSystemMessageText() );
         LOGGER.info( "Initialized OpenAITranslationAdapter" );
     }
 
