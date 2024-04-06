@@ -10,7 +10,6 @@ import com.tle.i18n.translator.translation.TranslationResult;
 import com.tle.i18n.translator.util.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -63,10 +62,19 @@ public class TranslateStep extends Step
         LOGGER.info( "Input file: " + originalFile );
         LOGGER.info( "Output file: " + translatedFile );
 
-        final Map<String, String> originalFileLines = objectMapper.readValue( originalFile, typeRef );
-        final Map<String, String> translatedFileLines = translatedFile.exists()
-                                                        ? objectMapper.readValue( translatedFile, typeRef )
-                                                        : new LinkedHashMap<>();
+        final Map<String, String> originalFileLines = FileUtils.readI18nFile( originalFile );
+        if ( originalFileLines == null )
+        {
+            LOGGER.error( "Error reading " + originalFile );
+            return;
+        }
+
+        final Map<String, String> translatedFileLines = FileUtils.readI18nFile( translatedFile );
+        if ( translatedFileLines == null )
+        {
+            LOGGER.error( "Error reading " + translatedFile );
+            return;
+        }
 
         for ( final String key : originalFileLines.keySet() )
         {
@@ -160,5 +168,4 @@ public class TranslateStep extends Step
                                 .findFirst()
                                 .orElse( null );
     }
-
 }
