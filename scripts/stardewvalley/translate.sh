@@ -2,7 +2,7 @@
 
 ORIGINAL_FILE_PATH="$1"
 TRANSLATED_FILE_PATH="$2"
-OPEN_AI_API_KEY=$OPEN_AI_API_KEY || $3
+OPEN_AI_API_KEY="$3" || "$OPEN_AI_API_KEY"
 
 SYSTEM_MESSAGE='
 Translate the input text to German.

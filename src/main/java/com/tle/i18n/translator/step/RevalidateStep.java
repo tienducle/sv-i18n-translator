@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -56,10 +55,21 @@ public class RevalidateStep extends Step
         LOGGER.info( "Original file  : " + originalFile );
         LOGGER.info( "Translated file: " + translatedFile );
 
-        int outdatedTranslations = 0;
+        final Map<String, String> originalFileLines = FileUtils.readI18nFile( originalFile );
+        if ( originalFileLines == null )
+        {
+            LOGGER.error( "Error reading " + originalFile );
+            return;
+        }
 
-        Map<String, String> originalFileLines = objectMapper.readValue( originalFile, typeRef );
-        Map<String, String> translatedFileLines = translatedFile.exists() ? objectMapper.readValue( translatedFile, typeRef ) : new LinkedHashMap<>();
+        final Map<String, String> translatedFileLines = FileUtils.readI18nFile( translatedFile );
+        if ( translatedFileLines == null )
+        {
+            LOGGER.error( "Error reading " + translatedFile );
+            return;
+        }
+
+        int outdatedTranslations = 0;
 
         for ( String key : originalFileLines.keySet() )
         {

@@ -1,6 +1,7 @@
 package com.tle.i18n.translator.step;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tle.i18n.translator.util.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +51,7 @@ public class SyncStep extends Step
 
         int missingTranslations = 0;
 
+        final ObjectMapper objectMapper = FileUtils.getObjectMapper();
         final JsonNode originalFileJson = objectMapper.readTree( originalFile );
         final JsonNode translatedFileJson = translatedFile.exists()
                                             ? objectMapper.readTree( translatedFile )
