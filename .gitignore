@@ -5,7 +5,7 @@ local.properties
 
 out
 target/**/*.*
-!target/sv-i18n-translator-*.jar*
+!target/sv-i18n-translator.jar*
 
 ### IntelliJ IDEA ###
 .idea
