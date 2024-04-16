@@ -13,7 +13,7 @@ In any case, as with every content created using LLM/GPT, you should always doub
 - Automatically synchronizes added/removed keys of source file to target file
 - Retains formatting of source file
 - Configurable validations
-  - Checks for dialogue control sequences (see [src/main/resources/validation/stardewvalley.json](src/main/resources/validation/stardewvalley.json)
+  - Checks for dialogue control sequences (see [src/main/resources/validation/stardewvalley.json](src/main/resources/validation/stardewvalley.json))
 - Uses OpenAI API for translations
   - Currently uses simple zero-shot prompting 
   - If a validation fails, it will retry with higher temperature

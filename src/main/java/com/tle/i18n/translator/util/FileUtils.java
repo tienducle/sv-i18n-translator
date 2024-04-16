@@ -6,33 +6,45 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.commons.io.ByteOrderMark;
+import org.apache.commons.io.input.BOMInputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 
+@Component
+@Lazy
 public class FileUtils
 {
-    private static final Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+    private static final Logger LOGGER = LoggerFactory.getLogger( FileUtils.class );
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+    private final TypeReference<LinkedHashMap<String, String>> typeRef = new TypeReference<>() {};
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private static final TypeReference<LinkedHashMap<String, String>> typeRef = new TypeReference<>() {};
-    private static final ObjectMapper objectMapper = new ObjectMapper().configure( JsonReadFeature.ALLOW_TRAILING_COMMA.mappedFeature(), true )
-                                                                       .configure( JsonReadFeature.ALLOW_JAVA_COMMENTS.mappedFeature(), true )
-                                                                       .configure( JsonReadFeature.ALLOW_YAML_COMMENTS.mappedFeature(), true )
-                                                                       .configure( JsonParser.Feature.STRICT_DUPLICATE_DETECTION, true );
+    public FileUtils()
+    {
+        LOGGER.info( "Initializing FileUtils" );
+        objectMapper.configure( JsonReadFeature.ALLOW_TRAILING_COMMA.mappedFeature(), true );
+        objectMapper.configure( JsonReadFeature.ALLOW_JAVA_COMMENTS.mappedFeature(), true );
+        objectMapper.configure( JsonReadFeature.ALLOW_YAML_COMMENTS.mappedFeature(), true );
+        objectMapper.configure( JsonParser.Feature.STRICT_DUPLICATE_DETECTION, true );
+        LOGGER.info( "Initialized FileUtils" );
+    }
 
-    public static ObjectMapper getObjectMapper()
+    public ObjectMapper getObjectMapper()
     {
         return objectMapper;
     }
 
-    public static void flushToFile( File file, Object object )
+    public void flushToFile( File file, Object object )
     {
         try ( FileWriter fileWriter = new FileWriter( file );
               BufferedWriter bufferedWriter = new BufferedWriter( fileWriter ) )
@@ -46,21 +58,29 @@ public class FileUtils
         }
     }
 
-    public static LinkedHashMap<String, String> readI18nFile( File file )
+    public LinkedHashMap<String, String> readI18nFile( File file ) throws IOException
     {
         if ( !file.exists() )
         {
             return new LinkedHashMap<>();
         }
 
-        try ( InputStream fileInputStream = new FileInputStream( file );
-              InputStreamReader fileInputStreamReader = new InputStreamReader( fileInputStream, StandardCharsets.UTF_8 ) )
+        try ( InputStreamReader inputStreamReader = new InputStreamReader( BOMInputStream.builder()
+                                                                                         .setByteOrderMarks(
+                                                                                                 ByteOrderMark.UTF_8,
+                                                                                                 ByteOrderMark.UTF_16BE,
+                                                                                                 ByteOrderMark.UTF_16LE,
+                                                                                                 ByteOrderMark.UTF_32BE,
+                                                                                                 ByteOrderMark.UTF_32LE )
+                                                                                         .setFile( file ).get() ) )
         {
-            return objectMapper.readValue( fileInputStreamReader, typeRef );
+            return objectMapper.readValue( inputStreamReader, typeRef );
         }
         catch ( Exception e )
         {
-            return null;
+            LOGGER.error( String.format( "Failed to read file: %s", file ), e );
         }
+
+        return null;
     }
 }

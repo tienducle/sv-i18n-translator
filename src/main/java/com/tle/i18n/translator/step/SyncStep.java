@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tle.i18n.translator.util.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -27,16 +26,20 @@ public class SyncStep extends Step
     private static final Logger LOGGER = LoggerFactory.getLogger( SyncStep.class );
     private static final String TRANSLATION_MISSING_VALUE = "<ERROR><MISSING>";
 
+    private final FileUtils fileUtils;
+
     // File containing the original text
     private final File originalFile;
 
     // File containing the translated text
     private final File translatedFile;
 
-    public SyncStep( @Value( "${step.sync.originalFilePath}" ) String originalFilePath,
+    public SyncStep( FileUtils fileUtils,
+                     @Value( "${step.sync.originalFilePath}" ) String originalFilePath,
                      @Value( "${step.sync.translatedFilePath}" ) String translatedFilePath )
     {
         LOGGER.info( "Initializing SyncStep" );
+        this.fileUtils = fileUtils;
         this.originalFile = new File( originalFilePath );
         this.translatedFile = new File( translatedFilePath );
         LOGGER.info( "Initialized SyncStep" );
@@ -51,7 +54,7 @@ public class SyncStep extends Step
 
         int missingTranslations = 0;
 
-        final ObjectMapper objectMapper = FileUtils.getObjectMapper();
+        final ObjectMapper objectMapper = fileUtils.getObjectMapper();
         final JsonNode originalFileJson = objectMapper.readTree( originalFile );
         final JsonNode translatedFileJson = translatedFile.exists()
                                             ? objectMapper.readTree( translatedFile )
@@ -76,7 +79,7 @@ public class SyncStep extends Step
         }
 
         LOGGER.info( String.format( "Number of new keys: %d", missingTranslations ) );
-        FileUtils.flushToFile( this.translatedFile, mergedContent );
+        fileUtils.flushToFile( this.translatedFile, mergedContent );
         LOGGER.info( "Finished SyncStep" );
     }
 }
