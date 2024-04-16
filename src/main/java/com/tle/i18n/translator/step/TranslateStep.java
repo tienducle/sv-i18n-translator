@@ -37,15 +37,18 @@ public class TranslateStep extends Step
 
     private final TranslationAdapter translationAdapter;
     private final ValidationAdapter validationAdapter;
+    private final FileUtils fileUtils;
 
     public TranslateStep( TranslationAdapter translationAdapter,
                           ValidationAdapter validationAdapter,
+                          FileUtils fileUtils,
                           @Value( "${step.translate.originalFilePath}" ) String originalFilePath,
                           @Value( "${step.translate.translatedFilePath}" ) String translatedFilePath )
     {
         LOGGER.info( "Initializing TranslateStep" );
         this.translationAdapter = translationAdapter;
         this.validationAdapter = validationAdapter;
+        this.fileUtils = fileUtils;
         this.originalFile = new File( originalFilePath );
         this.translatedFile = new File( translatedFilePath );
 
@@ -62,14 +65,14 @@ public class TranslateStep extends Step
         LOGGER.info( "Input file: " + originalFile );
         LOGGER.info( "Output file: " + translatedFile );
 
-        final Map<String, String> originalFileLines = FileUtils.readI18nFile( originalFile );
+        final Map<String, String> originalFileLines = fileUtils.readI18nFile( originalFile );
         if ( originalFileLines == null )
         {
             LOGGER.error( "Error reading " + originalFile );
             return;
         }
 
-        final Map<String, String> translatedFileLines = FileUtils.readI18nFile( translatedFile );
+        final Map<String, String> translatedFileLines = fileUtils.readI18nFile( translatedFile );
         if ( translatedFileLines == null )
         {
             LOGGER.error( "Error reading " + translatedFile );
@@ -107,10 +110,10 @@ public class TranslateStep extends Step
                 LOGGER.error( String.format( "Gave up on '%s': '%s'", key, originalText ) );
             }
             translatedFileLines.put( key, translatedText );
-            FileUtils.flushToFile( translatedFile, translatedFileLines );
+            fileUtils.flushToFile( translatedFile, translatedFileLines );
         }
 
-        FileUtils.flushToFile( translatedFile, translatedFileLines );
+        fileUtils.flushToFile( translatedFile, translatedFileLines );
         LOGGER.info( "Finished TranslateStep" );
     }
 

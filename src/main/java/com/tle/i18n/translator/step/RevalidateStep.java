@@ -24,6 +24,8 @@ public class RevalidateStep extends Step
 
     private ValidationAdapter validationAdapter;
 
+    private FileUtils fileUtils;
+
     @Value( "${step.revalidate.originalFilePath}" )
     private String originalFilePath;
 
@@ -38,11 +40,13 @@ public class RevalidateStep extends Step
 
     public RevalidateStep(
             ValidationAdapter validationAdapter,
+            FileUtils fileUtils,
             @Value( "${step.translate.originalFilePath}" ) String originalFilePath,
             @Value( "${step.translate.translatedFilePath}" ) String translatedFilePath )
     {
         LOGGER.info( "Initializing RevalidateStep" );
         this.validationAdapter = validationAdapter;
+        this.fileUtils = fileUtils;
         this.originalFile = new File( originalFilePath );
         this.translatedFile = new File( translatedFilePath );
         LOGGER.info( "Initialized RevalidateStep" );
@@ -55,14 +59,14 @@ public class RevalidateStep extends Step
         LOGGER.info( "Original file  : " + originalFile );
         LOGGER.info( "Translated file: " + translatedFile );
 
-        final Map<String, String> originalFileLines = FileUtils.readI18nFile( originalFile );
+        final Map<String, String> originalFileLines = fileUtils.readI18nFile( originalFile );
         if ( originalFileLines == null )
         {
             LOGGER.error( "Error reading " + originalFile );
             return;
         }
 
-        final Map<String, String> translatedFileLines = FileUtils.readI18nFile( translatedFile );
+        final Map<String, String> translatedFileLines = fileUtils.readI18nFile( translatedFile );
         if ( translatedFileLines == null )
         {
             LOGGER.error( "Error reading " + translatedFile );
@@ -93,13 +97,13 @@ public class RevalidateStep extends Step
             {
                 LOGGER.info( String.format( "Existing translation does not pass current validation. Adding <ERROR> tag to '%s'", key ) );
                 translatedFileLines.put( key, ValidationAdapter.TRANSLATION_ERROR_VALUE + " " + originalText + "<EXISTING_TRANSLATION>: " + translatedText );
-                FileUtils.flushToFile( translatedFile, translatedFileLines );
+                fileUtils.flushToFile( translatedFile, translatedFileLines );
                 outdatedTranslations++;
             }
         }
 
         LOGGER.info( String.format( "Number of outdated translations: %d", outdatedTranslations ) );
-        FileUtils.flushToFile( translatedFile, translatedFileLines );
+        fileUtils.flushToFile( translatedFile, translatedFileLines );
         LOGGER.info( "Finished RevalidateStep" );
     }
 }
