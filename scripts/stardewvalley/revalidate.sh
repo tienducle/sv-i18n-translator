@@ -19,4 +19,4 @@ java \
 -DtranslatedFilePath="$TRANSLATED_FILE_PATH" \
 -Dvalidation.adapter.configurationFile=stardewvalley.json \
 -Dvalidation.adapter=StardewValley \
--jar ../../target/sv-i18n-translator-0.0.1.jar
+-jar ../../target/sv-i18n-translator.jar

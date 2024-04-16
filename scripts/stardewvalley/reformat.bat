@@ -16,4 +16,4 @@ java ^
 -DrunModes=REFORMAT ^
 -DoriginalFilePath="%ORIGINAL_FILE_PATH%" ^
 -DtranslatedFilePath="%TRANSLATED_FILE_PATH%" ^
--jar ../../target/sv-i18n-translator-0.0.1.jar
+-jar ../../target/sv-i18n-translator.jar

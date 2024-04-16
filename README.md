@@ -30,9 +30,9 @@ In any case, as with every content created using LLM/GPT, you should always doub
 
 ### Run using scripts
 
-Clone repository or download repository as zip. A jar file is included under `/target/sv-i18n-translator-0.0.1.jar`.
+Clone repository or download repository as zip. A jar file is included under `/target/sv-i18n-translator.jar`.
 
-The bundled scripts are configured to translate the input text to german using OpenAI API (gpt-4-turbo-preview).  Therefore you must obtain an API key first. Since OpenAI switch to a prepaid model, you may need to charge your account first.
+The bundled scripts are configured to translate the input text to german using OpenAI API (gpt-4-turbo-preview). Therefore, you must obtain an API key first. Since OpenAI switch to a prepaid model, you may need to charge your account first.
 
 The system message can be found and modified in the [translate.sh script](scripts/stardewvalley/translate.sh).
 

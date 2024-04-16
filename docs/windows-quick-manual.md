@@ -33,15 +33,15 @@ Obtain a JDK version greater than 11. In the example below, Zulu OpenJDK 11 is u
 
 Switch to the directory where the scripts are located
 ```powershell
-cd .\Downloads\sv-i18n-translator\scripts\stardewvalley
+cd .\Downloads\sv-i18n-translator-main\scripts\stardewvalley
 ```
 
 Replace *yourusername* and *your-openai-key* with your actual username and OpenAI API key.
 The command below will just run the translation on a bundled test file.
 ```powershell
-.\translate.bat ^
-"C:\Users\yourusername\Downloads\sv-i18n-translator\src\test\resources\data\text\default.json" "C:\Users\yourusername\Downloads\sv-i18n-translator\src\test\resources\data\text\default.json" ^
-"C:\Users\yourusername\Downloads\sv-i18n-translator\src\test\resources\data\text\de.json" "C:\Users\yourusername\Downloads\sv-i18n-translator\src\test\resources\data\text\de.json"
+.\translate.bat `
+"C:\Users\yourusername\Downloads\sv-i18n-translator-main\src\test\resources\data\text\default.json" `
+"C:\Users\yourusername\Downloads\sv-i18n-translator-main\src\test\resources\data\text\de.json" `
 "your-openai-key"
 ```
 

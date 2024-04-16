@@ -47,4 +47,4 @@ java \
 -Dtranslation.adapter.openai.chat.systemMessage="$SYSTEM_MESSAGE" \
 -Dvalidation.adapter.configurationFile=stardewvalley.json \
 -Dvalidation.adapter=StardewValley \
--jar ../../target/sv-i18n-translator-0.0.1.jar
+-jar ../../target/sv-i18n-translator.jar
