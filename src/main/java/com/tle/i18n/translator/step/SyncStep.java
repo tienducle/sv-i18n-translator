@@ -3,6 +3,7 @@ package com.tle.i18n.translator.step;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tle.i18n.translator.util.FileUtils;
+import com.tle.i18n.translator.util.LocaleUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,13 +36,13 @@ public class SyncStep extends Step
     private final File translatedFile;
 
     public SyncStep( FileUtils fileUtils,
-                     @Value( "${step.sync.originalFilePath}" ) String originalFilePath,
-                     @Value( "${step.sync.translatedFilePath}" ) String translatedFilePath )
+                     @Value( "${originalFilePath}" ) String originalFilePath,
+                     @Value( "${targetLanguage}" ) String targetLanguage )
     {
         LOGGER.info( "Initializing SyncStep" );
         this.fileUtils = fileUtils;
         this.originalFile = new File( originalFilePath );
-        this.translatedFile = new File( translatedFilePath );
+        this.translatedFile = new File( fileUtils.getTranslatedFilePath( originalFilePath, targetLanguage ) );
         LOGGER.info( "Initialized SyncStep" );
     }
 

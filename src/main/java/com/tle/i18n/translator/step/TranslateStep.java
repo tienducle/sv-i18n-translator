@@ -1,8 +1,5 @@
 package com.tle.i18n.translator.step;
 
-import com.fasterxml.jackson.core.json.JsonReadFeature;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tle.i18n.translator.adapter.translation.TranslationAdapter;
 import com.tle.i18n.translator.adapter.validation.ValidationAdapter;
 import com.tle.i18n.translator.translation.TranslationRequest;
@@ -16,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Component
@@ -24,10 +20,6 @@ import java.util.Map;
 public class TranslateStep extends Step
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( TranslateStep.class );
-
-    // ObjectMapper to read JSON files
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final TypeReference<LinkedHashMap<String, String>> typeRef = new TypeReference<>() {};
 
     // Input file containing the original text
     private final File originalFile;
@@ -42,19 +34,15 @@ public class TranslateStep extends Step
     public TranslateStep( TranslationAdapter translationAdapter,
                           ValidationAdapter validationAdapter,
                           FileUtils fileUtils,
-                          @Value( "${step.translate.originalFilePath}" ) String originalFilePath,
-                          @Value( "${step.translate.translatedFilePath}" ) String translatedFilePath )
+                          @Value( "${originalFilePath}" ) String originalFilePath,
+                          @Value( "${targetLanguage}" ) String targetLanguage )
     {
         LOGGER.info( "Initializing TranslateStep" );
         this.translationAdapter = translationAdapter;
         this.validationAdapter = validationAdapter;
         this.fileUtils = fileUtils;
         this.originalFile = new File( originalFilePath );
-        this.translatedFile = new File( translatedFilePath );
-
-        objectMapper.configure( JsonReadFeature.ALLOW_TRAILING_COMMA.mappedFeature(), true );
-        objectMapper.configure( JsonReadFeature.ALLOW_JAVA_COMMENTS.mappedFeature(), true );
-        objectMapper.configure( JsonReadFeature.ALLOW_YAML_COMMENTS.mappedFeature(), true );
+        this.translatedFile = new File( fileUtils.getTranslatedFilePath( originalFilePath, targetLanguage ) );
         LOGGER.info( "Initialized TranslateStep" );
     }
 
