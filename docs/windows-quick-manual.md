@@ -41,7 +41,7 @@ The command below will just run the translation on a bundled test file.
 ```powershell
 .\translate.bat `
 "C:\Users\yourusername\Downloads\sv-i18n-translator-main\src\test\resources\data\text\default.json" `
-"C:\Users\yourusername\Downloads\sv-i18n-translator-main\src\test\resources\data\text\de.json" `
+"German" `
 "your-openai-key"
 ```
 
