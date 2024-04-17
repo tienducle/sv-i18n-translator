@@ -1,11 +1,14 @@
 #!/bin/zsh
 
 ORIGINAL_FILE_PATH="$1"
-TRANSLATED_FILE_PATH="$2"
-OPEN_AI_API_KEY="$3" || "$OPEN_AI_API_KEY"
+TARGET_LANGUAGE="$2"
+OPEN_AI_API_KEY="$OPEN_AI_API_KEY"
+if [ -z "$OPEN_AI_API_KEY" ]; then
+    OPEN_AI_API_KEY="$3"
+fi
 
 SYSTEM_MESSAGE='
-Translate the input text to German.
+Translate the input text to '$TARGET_LANGUAGE'.
 The input is a text from the video game Stardew Valley.
 Preserve all special characters.
 Preserve all single quotes.
@@ -18,14 +21,13 @@ Respond only with the translated text.
 If you can not translate the input, or you are unsure, respond with <ERROR>.
 '
 
-
 if [ -z "$ORIGINAL_FILE_PATH" ]; then
     echo "Missing ORIGINAL_FILE_PATH (arg1)"
     exit 1
 fi
 
-if [ -z "$TRANSLATED_FILE_PATH" ]; then
-    echo "Missing TRANSLATED_FILE_PATH (arg2)"
+if [ -z "$TARGET_LANGUAGE" ]; then
+    echo "Missing TARGET_LANGUAGE (arg2, e.g. German, French, Spanish, etc.)"
     exit 1
 fi
 
@@ -37,7 +39,7 @@ fi
 java \
 -DrunModes=TRANSLATE \
 -DoriginalFilePath="$ORIGINAL_FILE_PATH" \
--DtranslatedFilePath="$TRANSLATED_FILE_PATH" \
+-DtargetLanguage="$TARGET_LANGUAGE" \
 -Dtranslation.adapter=OpenAI \
 -Dtranslation.adapter.openai.apiKey="$OPEN_AI_API_KEY" \
 -Dtranslation.adapter.translation.openai.chat.model=gpt-4-turbo-preview \

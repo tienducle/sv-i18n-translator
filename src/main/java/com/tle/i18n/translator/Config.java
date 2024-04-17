@@ -10,6 +10,7 @@ import com.tle.i18n.translator.adapter.translation.openai.OpenAITranslationAdapt
 import com.tle.i18n.translator.adapter.validation.DefaultValidationAdapter;
 import com.tle.i18n.translator.adapter.validation.ValidationAdapter;
 import com.tle.i18n.translator.adapter.validation.stardewvalley.StardewValleyValidationAdapter;
+import com.tle.i18n.translator.util.LocaleUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -31,6 +32,12 @@ public class Config
     @Value( "${runModes}" )
     private List<RunMode> runModes;
 
+    @Value( "${sourceLanguage:English}" )
+    private String sourceLanguage;
+
+    @Value( "${targetLanguage:German}" )
+    private String targetLanguage;
+
     public List<RunMode> getRunModes()
     {
         return runModes;
@@ -49,14 +56,20 @@ public class Config
     @Bean
     @ConditionalOnProperty( value = "translation.adapter", havingValue = "DeepL" )
     @Lazy
-    public TranslationAdapter deepLTranslationAdapter( @Value( "${translation.adapter.deepl.apiKey:}" ) String apiKey,
+    public TranslationAdapter deepLTranslationAdapter( LocaleUtils localeUtils,
+                                                       @Value( "${translation.adapter.deepl.apiKey:}" ) String apiKey,
                                                        @Value( "${translation.adapter.deepl.proTier:false}" ) boolean proTier,
-                                                       @Value( "${translation.adapter.deepl.sourceLanguage:}" ) String sourceLanguage,
-                                                       @Value( "${translation.adapter.deepl.targetLanguage:}" ) String targetLanguage,
                                                        @Value( "${translation.adapter.deepl.formality:}" ) String formality,
                                                        @Value( "${translation.adapter.deepl.glossaryId:}" ) String glossaryId )
     {
-        return new DeepLTranslationAdapter( new DeepLTranslationAdapterConfiguration( apiKey, proTier, sourceLanguage, targetLanguage, formality, glossaryId ) );
+        final String sourceLanguageCode = localeUtils.getCountryCodeForLanguage( this.sourceLanguage );
+        final String targetLanguageCode = localeUtils.getCountryCodeForLanguage( this.targetLanguage );
+        return new DeepLTranslationAdapter( new DeepLTranslationAdapterConfiguration( apiKey,
+                                                                                      proTier,
+                                                                                      formality,
+                                                                                      glossaryId,
+                                                                                      sourceLanguageCode,
+                                                                                      targetLanguageCode ) );
     }
 
     @Bean

@@ -1,5 +1,6 @@
 package com.tle.i18n.translator.step;
 
+import com.tle.i18n.translator.util.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,12 +29,13 @@ public class ReformatStep extends Step
     // File containing the translated text
     private final File translatedFile;
 
-    public ReformatStep( @Value( "${step.reformat.originalFilePath}" ) String originalFilePath,
-                         @Value( "${step.reformat.translatedFilePath}" ) String translatedFilePath )
+    public ReformatStep( FileUtils fileUtils,
+                         @Value( "${originalFilePath}" ) String originalFilePath,
+                         @Value( "${targetLanguage}" ) String targetLanguage )
     {
         LOGGER.info( "Initializing ReformatStep" );
         this.originalFile = new File( originalFilePath );
-        this.translatedFile = new File( translatedFilePath );
+        this.translatedFile = new File( fileUtils.getTranslatedFilePath( originalFilePath, targetLanguage ) );
         LOGGER.info( "Initialized ReformatStep" );
     }
 

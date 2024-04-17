@@ -22,15 +22,9 @@ public class RevalidateStep extends Step
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( RevalidateStep.class );
 
-    private ValidationAdapter validationAdapter;
+    private final ValidationAdapter validationAdapter;
 
-    private FileUtils fileUtils;
-
-    @Value( "${step.revalidate.originalFilePath}" )
-    private String originalFilePath;
-
-    @Value( "${step.revalidate.translatedFilePath}" )
-    private String translatedFilePath;
+    private final FileUtils fileUtils;
 
     // Input file containing the original text
     private final File originalFile;
@@ -41,14 +35,14 @@ public class RevalidateStep extends Step
     public RevalidateStep(
             ValidationAdapter validationAdapter,
             FileUtils fileUtils,
-            @Value( "${step.translate.originalFilePath}" ) String originalFilePath,
-            @Value( "${step.translate.translatedFilePath}" ) String translatedFilePath )
+            @Value( "${originalFilePath}" ) String originalFilePath,
+            @Value( "${targetLanguage}" ) String targetLanguage )
     {
         LOGGER.info( "Initializing RevalidateStep" );
         this.validationAdapter = validationAdapter;
         this.fileUtils = fileUtils;
         this.originalFile = new File( originalFilePath );
-        this.translatedFile = new File( translatedFilePath );
+        this.translatedFile = new File( fileUtils.getTranslatedFilePath( originalFilePath, targetLanguage ) );
         LOGGER.info( "Initialized RevalidateStep" );
     }
 

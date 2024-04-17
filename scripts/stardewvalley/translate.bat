@@ -1,10 +1,10 @@
 @echo off
 set ORIGINAL_FILE_PATH=%1
-set TRANSLATED_FILE_PATH=%2
+set TARGET_LANGUAGE=%2
 set OPEN_AI_API_KEY=%3
 
 set SYSTEM_MESSAGE=^
-Translate the input text to German.^
+Translate the input text to %TARGET_LANGUAGE%.^
 The input is a text from the video game Stardew Valley.^
 Preserve all special characters.^
 Preserve all single quotes.^
@@ -21,8 +21,8 @@ if %ORIGINAL_FILE_PATH% == "" (
     exit /b 1
 )
 
-if %TRANSLATED_FILE_PATH% == "" (
-    echo "Missing TRANSLATED_FILE_PATH (arg2)"
+if %TARGET_LANGUAGE% == "" (
+    echo "Missing TARGET_LANGUAGE (arg2, e.g. German, French, Spanish, etc.)"
     exit /b 1
 )
 
@@ -34,7 +34,7 @@ if %OPEN_AI_API_KEY% == "" (
 java ^
 -DrunModes=TRANSLATE ^
 -DoriginalFilePath="%ORIGINAL_FILE_PATH%" ^
--DtranslatedFilePath="%TRANSLATED_FILE_PATH%" ^
+-DtargetLanguage="%TARGET_LANGUAGE%" ^
 -Dtranslation.adapter=OpenAI ^
 -Dtranslation.adapter.openai.apiKey="%OPEN_AI_API_KEY%" ^
 -Dtranslation.adapter.translation.openai.chat.model=gpt-4-turbo-preview ^

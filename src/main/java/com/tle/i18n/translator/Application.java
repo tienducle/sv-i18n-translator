@@ -4,6 +4,7 @@ import com.tle.i18n.translator.step.ReformatStep;
 import com.tle.i18n.translator.step.RevalidateStep;
 import com.tle.i18n.translator.step.SyncStep;
 import com.tle.i18n.translator.step.TranslateStep;
+import org.apache.commons.lang3.LocaleUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -13,6 +14,7 @@ import org.springframework.context.event.EventListener;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 @SpringBootApplication
 public class Application

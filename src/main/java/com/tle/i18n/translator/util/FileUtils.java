@@ -28,14 +28,16 @@ public class FileUtils
     private final Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     private final TypeReference<LinkedHashMap<String, String>> typeRef = new TypeReference<>() {};
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final LocaleUtils localeUtils;
 
-    public FileUtils()
+    public FileUtils( LocaleUtils localeUtils )
     {
         LOGGER.info( "Initializing FileUtils" );
         objectMapper.configure( JsonReadFeature.ALLOW_TRAILING_COMMA.mappedFeature(), true );
         objectMapper.configure( JsonReadFeature.ALLOW_JAVA_COMMENTS.mappedFeature(), true );
         objectMapper.configure( JsonReadFeature.ALLOW_YAML_COMMENTS.mappedFeature(), true );
         objectMapper.configure( JsonParser.Feature.STRICT_DUPLICATE_DETECTION, true );
+        this.localeUtils = localeUtils;
         LOGGER.info( "Initialized FileUtils" );
     }
 
@@ -82,5 +84,17 @@ public class FileUtils
         }
 
         return null;
+    }
+
+    /**
+     * Returns the path to the translated file for the given target language
+     *
+     * If the input is "/path/to/default.json", "German"
+     * the method will return "/path/to/de.json"
+     */
+    public String getTranslatedFilePath( String originalFilePath, String targetLanguage )
+    {
+        final String targetLanguageCode = localeUtils.getCountryCodeForLanguage( targetLanguage );
+        return originalFilePath.replace( "default.json", targetLanguageCode + ".json" );
     }
 }

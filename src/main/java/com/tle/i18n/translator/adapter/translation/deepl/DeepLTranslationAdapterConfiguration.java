@@ -11,17 +11,17 @@ public class DeepLTranslationAdapterConfiguration
 
     public DeepLTranslationAdapterConfiguration( String apiKey,
                                                  boolean proTier,
-                                                 String sourceLanguage,
-                                                 String targetLanguage,
                                                  String formality,
-                                                 String glossaryId )
+                                                 String glossaryId,
+                                                 String sourceLanguage,
+                                                 String targetLanguage )
     {
         this.apiKey = apiKey;
         this.proTier = proTier;
-        this.sourceLanguage = sourceLanguage;
-        this.targetLanguage = targetLanguage;
         this.formality = formality.isEmpty() ? null : formality;
         this.glossaryId = glossaryId.isEmpty() ? null : glossaryId;
+        this.sourceLanguage = sourceLanguage;
+        this.targetLanguage = targetLanguage;
     }
 
     public String getApiKey()
@@ -34,16 +34,6 @@ public class DeepLTranslationAdapterConfiguration
         return proTier;
     }
 
-    public String getSourceLanguage()
-    {
-        return sourceLanguage;
-    }
-
-    public String getTargetLanguage()
-    {
-        return targetLanguage;
-    }
-
     public String getFormality()
     {
         return formality;
@@ -52,5 +42,15 @@ public class DeepLTranslationAdapterConfiguration
     public String getGlossaryId()
     {
         return glossaryId;
+    }
+
+    public String getSourceLanguage()
+    {
+        return sourceLanguage;
+    }
+
+    public String getTargetLanguage()
+    {
+        return targetLanguage;
     }
 }
