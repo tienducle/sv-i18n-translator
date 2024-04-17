@@ -47,7 +47,10 @@ This will synchronize the keys of the source file to the target file.
 New keys will be added to the target file and keys that are not present in the source file will be removed from the target file.
 
 ```bash
-./sync.sh "/path/to/source/file" "/path/to/target/file"
+# Usage:
+# ./sync.sh "/path/to/source/default.json" "Language"
+
+./sync.sh "../../src/test/resources/data/text/default.json" "German"
 ```
 
 ###### Example
@@ -63,12 +66,18 @@ This will translate the target file using the OpenAI API.
 The OpenAI API key must be additionally provided here.
 
 ```bash
+# Usage (with Open AI API key set as environment variable):
+# ./translate.sh "/path/to/source/default.json" "Language"
+
 export OPEN_AI_API_KEY="sk-..."
-./translate.sh "/path/to/source/file" "/path/to/target/file"
+./translate.sh "../../src/test/resources/data/text/default.json" "German"
 ```
 
 ```bash
-./translate.sh "/path/to/source/file" "/path/to/target/file" "sk-..."
+# Usage (with Open AI API key as 3rd parameter):
+# ./translate.sh "/path/to/source/default.json" "Language" "Open AI API Key"
+
+./translate.sh "../../src/test/resources/data/text/default.json" "German" "sk-..."
 ```
 
 ###### Example
@@ -84,7 +93,10 @@ This will revalidate the target file with the current validation configuration.
 Use this, if the code or the validation configuration has changed. If a translation is not accepted by the current validation anymore, it will be tagged with <ERROR> and will be picked up during translation again.
 
 ```bash
-./revalidate.sh "/path/to/source/file" "/path/to/target/file"
+# Usage:
+# ./revalidate.sh "/path/to/source/default.json" "Language"
+
+./revalidate.sh "../../src/test/resources/data/text/default.json" "German"
 ```
 
 #### Reformat
@@ -92,5 +104,8 @@ Use this, if the code or the validation configuration has changed. If a translat
 This will reformat the target file to match the source file.
 
 ```bash
-./reformat.sh "/path/to/source/file" "/path/to/target/file"
+# Usage:
+# ./reformat.sh "/path/to/source/default.json" "Language"
+
+./reformat.sh "../../src/test/resources/data/text/default.json" "German"
 ```
