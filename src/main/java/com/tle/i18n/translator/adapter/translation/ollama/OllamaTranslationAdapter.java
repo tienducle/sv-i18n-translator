@@ -9,7 +9,14 @@ import com.tle.ollama.model.chat.ChatCompletionResponse;
 import com.tle.ollama.model.chat.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
+@Component
+@ConditionalOnProperty( value = "translation.adapter", havingValue = "Ollama" )
+@Lazy
 public class OllamaTranslationAdapter extends TranslationAdapter
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( OllamaTranslationAdapter.class );
@@ -20,8 +27,11 @@ public class OllamaTranslationAdapter extends TranslationAdapter
 
     private final Message systemMessage;
 
-
-    public OllamaTranslationAdapter( String scheme, String host, int port, String model, String systemMessage )
+    public OllamaTranslationAdapter( @Value( "${translation.adapter.ollama.scheme:http}" ) String scheme,
+                                     @Value( "${translation.adapter.ollama.host:localhost}" ) String host,
+                                     @Value( "${translation.adapter.ollama.port:11434}" ) int port,
+                                     @Value( "${translation.adapter.ollama.model:llama2}" ) String model,
+                                     @Value( "${translation.adapter.ollama.chat.systemMessage:}" ) String systemMessage )
     {
         LOGGER.info( "Initializing OllamaTranslationAdapter" );
         this.ollamaClient = new OllamaClient( scheme, host, port );
@@ -47,29 +57,12 @@ public class OllamaTranslationAdapter extends TranslationAdapter
             LOGGER.warn( "Retrying" );
         }
 
-        StringBuilder sb = new StringBuilder();
-        sb.append( "[INST]" );
-        sb.append( " " );
-        sb.append( systemMessage.getContent() );
-        sb.append( " " );
-        sb.append( "[/INST]" );
-        sb.append( "\n" );
-        sb.append( "Okay please provide your text for translation." );
-        sb.append( "\n" );
-        sb.append( "[INST]" );
-        sb.append( " " );
-        sb.append( originalText );
-        sb.append( " " );
-        sb.append( "[/INST]" );
-
         final ChatCompletionResponse chatCompletionResponse = ollamaClient.postChatCompletion( createTranslationRequest( originalText ) );
 
         // OpenAI request failed
         if ( chatCompletionResponse == null )
         {
-            return new TranslationResult( translationRequest,
-                                          "ChatCompletion request failed.",
-                                          currentAttempt <= getMaxAttempts() );
+            return new TranslationResult( translationRequest, "ChatCompletion request failed.", currentAttempt <= getMaxAttempts() );
         }
 
         // OpenAI request succeeded
@@ -89,11 +82,22 @@ public class OllamaTranslationAdapter extends TranslationAdapter
 
         request.addMessage( this.systemMessage );
 
+        getContextMessages().forEach( message -> request.addMessage( toOllamaMessage( message ) ) );
+        getHistoryMessages().forEachRemaining( message -> request.addMessage( toOllamaMessage( message ) ) );
+
         final Message translationMessage = new Message();
         translationMessage.setRole( "user" );
         translationMessage.setContent( originalText );
         request.addMessage( translationMessage );
 
         return request;
+    }
+
+    private Message toOllamaMessage( com.tle.i18n.translator.common.Message message )
+    {
+        final Message ollamaMessage = new Message();
+        ollamaMessage.setRole( message.getRole() );
+        ollamaMessage.setContent( message.getContent() );
+        return ollamaMessage;
     }
 }

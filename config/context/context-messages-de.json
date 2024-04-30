@@ -1,0 +1,18 @@
+[
+  {
+    "role": "user",
+    "content": "Hey there, @.#$b#...#$b#Wow it's pretty hot today, huh?.$1"
+  },
+  {
+    "role": "assistant",
+    "content": "Hey, @.#$b#...#$b#Wow, es ist echt heiß heute, hm?.$1"
+  },
+  {
+    "role": "user",
+    "content": "Oh hey, you must be the new farmer that moved to Stardew Valley?$0#$e#I haven't seen you around before.$0#$e#Nice to meet you!$0#$e#I got some work to do, will catch ya later."
+  },
+  {
+    "role": "assistant",
+    "content": "Oh hey, du musst der Neuzugang hier in Stardew Valley sein?$0#$e#Ich habe dich hier in der Gegend noch nie gesehen.$0#$e#Schön dich kennen zu lernen$0#$e#Ich habe etwas Arbeit zu erledigen, wir sehen uns später."
+  }
+]

@@ -3,7 +3,6 @@ package com.tle.i18n.translator.step;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tle.i18n.translator.util.FileUtils;
-import com.tle.i18n.translator.util.LocaleUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,5 +1,11 @@
 package com.tle.i18n.translator.adapter.translation.openai;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@ConditionalOnProperty( value = "translation.adapter", havingValue = "OpenAI" )
 public class OpenAITranslationAdapterConfiguration
 {
     private final String apiKey;
@@ -12,13 +18,13 @@ public class OpenAITranslationAdapterConfiguration
 
     private final String systemMessageText;
 
-    public OpenAITranslationAdapterConfiguration( String apiKey,
-                                                  String model,
-                                                  int maxTokens,
-                                                  double initTemperature,
-                                                  double temperatureIncrement,
-                                                  int n,
-                                                  String systemMessageText )
+    public OpenAITranslationAdapterConfiguration( @Value( "${translation.adapter.openai.apiKey:}" ) String apiKey,
+                                                  @Value( "${translation.adapter.translation.openai.chat.model:}" ) String model,
+                                                  @Value( "${translation.adapter.openai.chat.maxTokens:2000}" ) int maxTokens,
+                                                  @Value( "${translation.adapter.openai.chat.initTemperature:0.2}" ) double initTemperature,
+                                                  @Value( "${translation.adapter.openai.chat.temperatureIncrement:0.6}" ) double temperatureIncrement,
+                                                  @Value( "${adapter.translation.openai.chat.n:1}" ) int n,
+                                                  @Value( "${translation.adapter.openai.chat.systemMessage:}" ) String systemMessage )
     {
         this.apiKey = apiKey;
         this.model = model;
@@ -26,7 +32,7 @@ public class OpenAITranslationAdapterConfiguration
         this.initTemperature = initTemperature;
         this.temperatureIncrement = temperatureIncrement;
         this.n = n;
-        this.systemMessageText = systemMessageText;
+        this.systemMessageText = systemMessage;
     }
 
     public String getApiKey()
