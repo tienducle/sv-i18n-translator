@@ -9,9 +9,15 @@ import com.tle.openai.model.chat.ChatCompletionResult;
 import com.tle.openai.model.chat.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
+@Component
+@ConditionalOnProperty( value = "translation.adapter", havingValue = "OpenAI" )
+@Lazy
 public class OpenAITranslationAdapter extends TranslationAdapter
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( OpenAITranslationAdapter.class );

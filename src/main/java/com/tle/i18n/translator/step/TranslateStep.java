@@ -50,20 +50,20 @@ public class TranslateStep extends Step
     public void execute() throws IOException
     {
         LOGGER.info( "Executing TranslateStep" );
-        LOGGER.info( "Input file: " + originalFile );
-        LOGGER.info( "Output file: " + translatedFile );
+        LOGGER.info( "Input file: {}", originalFile );
+        LOGGER.info( "Output file: {}", translatedFile );
 
         final Map<String, String> originalFileLines = fileUtils.readI18nFile( originalFile );
         if ( originalFileLines == null )
         {
-            LOGGER.error( "Error reading " + originalFile );
+            LOGGER.error( "Error reading {}", originalFile );
             return;
         }
 
         final Map<String, String> translatedFileLines = fileUtils.readI18nFile( translatedFile );
         if ( translatedFileLines == null )
         {
-            LOGGER.error( "Error reading " + translatedFile );
+            LOGGER.error( "Error reading {}", translatedFile );
             return;
         }
 
@@ -97,6 +97,12 @@ public class TranslateStep extends Step
             {
                 LOGGER.error( String.format( "Gave up on '%s': '%s'", key, originalText ) );
             }
+            else
+            {
+                translationAdapter.addRequestToHistory( originalText );
+                translationAdapter.addResponseToHistory( translatedText );
+            }
+
             translatedFileLines.put( key, translatedText );
             fileUtils.flushToFile( translatedFile, translatedFileLines );
         }

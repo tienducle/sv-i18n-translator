@@ -5,7 +5,7 @@
     "hallo herr.",
     "hallo, herr."
   ],
-  "countSpecialCharacters": "@$#%^€<>()",
+  "countSpecialCharacters": "@$#%^€<>()[]",
   "regexValidationList": [
     {
       "id": "QUOTES",

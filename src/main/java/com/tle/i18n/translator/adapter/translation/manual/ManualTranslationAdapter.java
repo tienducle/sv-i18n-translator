@@ -5,7 +5,13 @@ import com.tle.i18n.translator.translation.TranslationRequest;
 import com.tle.i18n.translator.translation.TranslationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
+@Component
+@ConditionalOnProperty( value = "translation.adapter", havingValue = "Manual" )
+@Lazy
 public class ManualTranslationAdapter extends TranslationAdapter
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( ManualTranslationAdapter.class );
