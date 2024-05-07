@@ -20,7 +20,7 @@ public class DeepLTranslationAdapterConfiguration
                                                  @Value( "${translation.adapter.deepl.proTier:false}" ) boolean proTier,
                                                  @Value( "${translation.adapter.deepl.formality:}" ) String formality,
                                                  @Value( "${translation.adapter.deepl.glossaryId:}" ) String glossaryId,
-                                                 @Value( "${sourceLanguage:English}" ) String sourceLanguage,
+                                                 @Value( "${translation.adapter.deepl.sourceLanguage:English}" ) String sourceLanguage,
                                                  @Value( "${targetLanguage:German}" ) String targetLanguage,
                                                  LocaleUtils localeUtils )
     {

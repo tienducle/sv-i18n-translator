@@ -30,15 +30,17 @@ public class OllamaTranslationAdapter extends TranslationAdapter
     public OllamaTranslationAdapter( @Value( "${translation.adapter.ollama.scheme:http}" ) String scheme,
                                      @Value( "${translation.adapter.ollama.host:localhost}" ) String host,
                                      @Value( "${translation.adapter.ollama.port:11434}" ) int port,
-                                     @Value( "${translation.adapter.ollama.model:llama2}" ) String model,
+                                     @Value( "${translation.adapter.ollama.model:llama3:instruct}" ) String model,
                                      @Value( "${translation.adapter.ollama.chat.systemMessage:}" ) String systemMessage )
     {
-        LOGGER.info( "Initializing OllamaTranslationAdapter" );
+        LOGGER.info( String.format( "Initializing OllamaTranslationAdapter for model '%s'", model ) );
         this.ollamaClient = new OllamaClient( scheme, host, port );
         this.model = model;
         this.systemMessage = new Message();
         this.systemMessage.setRole( "system" );
         this.systemMessage.setContent( systemMessage );
+        LOGGER.info( "System message:" );
+        LOGGER.info( systemMessage );
         LOGGER.info( "Initialized OllamaTranslationAdapter" );
     }
 

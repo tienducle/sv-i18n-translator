@@ -19,9 +19,11 @@ public class OllamaClient extends AbstractApiClient
 
     public OllamaClient( String scheme, String host, int port )
     {
+        LOGGER.info( String.format( "Initializing OllamaClient @%s://%s:%s", scheme, host, port ) );
         this.scheme = scheme;
         this.host = host;
         this.port = port;
+        LOGGER.info( "Initialized OllamaClient" );
     }
 
     public ChatCompletionResponse postChatCompletion( ChatCompletionRequest chatCompletionRequest )
@@ -31,7 +33,6 @@ public class OllamaClient extends AbstractApiClient
                 .host( host )
                 .port( port )
                 .addPathSegments( "api/chat" );
-
 
         final Request request = new Request.Builder().post( getJsonRequestBody( chatCompletionRequest ) )
                                                      .url( httpUrlBuilder.build() )

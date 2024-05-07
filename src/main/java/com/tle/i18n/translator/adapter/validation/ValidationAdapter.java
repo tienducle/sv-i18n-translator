@@ -6,9 +6,6 @@ import com.tle.i18n.translator.adapter.validation.configuration.ValidationConfig
 import com.tle.i18n.translator.util.LoggerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +26,7 @@ public abstract class ValidationAdapter
 
     public ValidationAdapter( String validationConfigurationFileName )
     {
-        LOGGER.info( "Reading validation configuration file: " + validationConfigurationFileName );
+        LOGGER.info( "Reading validation configuration file: {}", validationConfigurationFileName );
         try
         {
             validationConfiguration = objectMapper.readValue( getClass().getClassLoader()
@@ -37,7 +34,7 @@ public abstract class ValidationAdapter
         }
         catch ( Exception e )
         {
-            LOGGER.error( "Error reading validation configuration file: " + validationConfigurationFileName, e );
+            LOGGER.error( "Error reading validation configuration file: {}", validationConfigurationFileName, e );
         }
     }
 
