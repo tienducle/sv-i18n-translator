@@ -27,7 +27,7 @@ public abstract class TranslationAdapter
     @Value( "${translation.adapter.maxAttempts:4}" )
     private int maxAttempts;
 
-    @Value( "${translation.adapter.maxHistorySize:6}" )
+    @Value( "${translation.adapter.maxHistorySize:0}" )
     private int maxHistorySize;
 
     @Value( "${translation.adapter.contextMessagesFilePath:}" )
@@ -131,7 +131,7 @@ public abstract class TranslationAdapter
             final String content = contextMessage.get( "content" );
 
             contextMessages.add( new Message( role, content ) );
-            LOGGER.debug( "Added '{}' context message: {}", role, content );
+            LOGGER.info( "Added '{}' context message: {}", role, content );
         }
 
     }
