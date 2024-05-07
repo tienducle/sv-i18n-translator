@@ -2,6 +2,7 @@
 local-*.sh
 *.log
 local.properties
+local-*.properties
 
 out
 target/**/*.*
