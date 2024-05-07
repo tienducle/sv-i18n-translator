@@ -130,11 +130,22 @@ public class OpenAITranslationAdapter extends TranslationAdapter
 
         request.addMessage( this.systemMessage );
 
+        getContextMessages().forEach( message -> request.addMessage( toOpenAiMessage( message ) ) );
+        getHistoryMessages().forEachRemaining( message -> request.addMessage( toOpenAiMessage( message ) ) );
+
         Message translationMessage = new Message();
         translationMessage.setRole( "user" );
         translationMessage.setContent( originalText );
         request.addMessage( translationMessage );
 
         return request;
+    }
+
+    private Message toOpenAiMessage( com.tle.i18n.translator.common.Message message )
+    {
+        final Message openAiMessage = new Message();
+        openAiMessage.setRole( message.getRole() );
+        openAiMessage.setContent( message.getContent() );
+        return openAiMessage;
     }
 }
