@@ -9,9 +9,6 @@ public class ChatCompletionRequest
 {
     private String model = "gpt-3.5-turbo";
 
-    // skip serialization of maxTokens if it is set to 0
-    // this is a hack to get around the fact that the maxTokens field is not used in the chat completion API
-    // but is used in the completion API
     @SerializedName( value = "max_tokens", alternate = { "maxTokens" } )
     private int maxTokens = 2000;
 

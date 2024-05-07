@@ -59,8 +59,10 @@ public class OpenAIClient extends AbstractApiClient
                 .addPathSegments( V1 + "/chat/completions" );
 
         // request 20% more tokens than the sum of all message tokens
-        chatCompletionRequest.setMaxTokens( (int) ( countMessageTokens( chatCompletionRequest.getModel(), chatCompletionRequest.getMessages() ) * 1.2 )
-                                            + (int) ( chatCompletionRequest.getTemperature() * 50 ) );
+        final int requiredTokens = (int) ( countMessageTokens( chatCompletionRequest.getModel(), chatCompletionRequest.getMessages() ) * 1.2 )
+                             + (int) ( chatCompletionRequest.getTemperature() * 50 );
+
+        chatCompletionRequest.setMaxTokens( Math.min( chatCompletionRequest.getMaxTokens(), requiredTokens ) );
 
         final Request request = new Request.Builder().post( getJsonRequestBody( chatCompletionRequest ) )
                                                      .url( httpUrlBuilder.build() )

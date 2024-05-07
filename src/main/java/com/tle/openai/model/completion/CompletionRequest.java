@@ -1,10 +1,6 @@
 package com.tle.openai.model.completion;
 
 import com.google.gson.annotations.SerializedName;
-import com.tle.openai.model.chat.Message;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class CompletionRequest
 {
