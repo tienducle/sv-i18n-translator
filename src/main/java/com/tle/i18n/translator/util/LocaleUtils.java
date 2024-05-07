@@ -28,7 +28,9 @@ public class LocaleUtils
         for ( String isoLanguage : Locale.getISOLanguages() )
         {
             final Locale locale = Locale.forLanguageTag( isoLanguage + "-xx" );
-            reverseLocaleLookupMap.put( locale.getDisplayLanguage(), isoLanguage );
+            final String language = locale.getDisplayLanguage( Locale.ENGLISH );
+            reverseLocaleLookupMap.put( locale.getDisplayLanguage( Locale.ENGLISH ), isoLanguage );
+            LOGGER.debug( "Added {} -> '{}' to lookup map", language, isoLanguage);
         }
 
         LOGGER.info( "Initialized LocaleUtils" );
@@ -36,6 +38,8 @@ public class LocaleUtils
 
     public String getCountryCodeForLanguage( String language )
     {
-        return reverseLocaleLookupMap.get( language );
+        final String countryCode = reverseLocaleLookupMap.get( language );
+        LOGGER.info( "Country code for '{}' is '{}'", language, countryCode );
+        return countryCode;
     }
 }
