@@ -27,8 +27,6 @@ public class OpenAIClient extends AbstractApiClient
 
     private final String bearerToken;
 
-    private final EncodingRegistry registry = Encodings.newDefaultEncodingRegistry();
-
     public OpenAIClient( String bearerToken )
     {
         LOGGER.info( "Initializing ChatGptClient with Bearer " + bearerToken.substring( 0, 4 ) + "..." );
@@ -58,12 +56,6 @@ public class OpenAIClient extends AbstractApiClient
                 .host( host )
                 .addPathSegments( V1 + "/chat/completions" );
 
-        // request 20% more tokens than the sum of all message tokens
-        final int requiredTokens = (int) ( countMessageTokens( chatCompletionRequest.getModel(), chatCompletionRequest.getMessages() ) * 1.2 )
-                             + (int) ( chatCompletionRequest.getTemperature() * 50 );
-
-        chatCompletionRequest.setMaxTokens( Math.min( chatCompletionRequest.getMaxTokens(), requiredTokens ) );
-
         final Request request = new Request.Builder().post( getJsonRequestBody( chatCompletionRequest ) )
                                                      .url( httpUrlBuilder.build() )
                                                      .addHeader( "Authorization", "Bearer " + this.bearerToken )
@@ -73,34 +65,4 @@ public class OpenAIClient extends AbstractApiClient
         return executeRequest( request, TypeToken.get( ChatCompletionResult.class ).getType() );
     }
 
-    // from https://jtokkit.knuddels.de/docs/getting-started/recipes/chatml
-    private int countMessageTokens( String model, List<Message> messages )
-    {
-        Encoding encoding = registry.getEncodingForModel( model ).orElseThrow();
-        int tokensPerMessage;
-        if ( model.startsWith( "gpt-4" ) )
-        {
-            tokensPerMessage = 3;
-        }
-        else if ( model.startsWith( "gpt-3.5-turbo" ) )
-        {
-            tokensPerMessage = 4; // every message follows <|start|>{role/name}\n{content}<|end|>\n
-        }
-        else
-        {
-            throw new IllegalArgumentException( "Unsupported model: " + model );
-        }
-
-        int sum = 0;
-        for ( final var message : messages )
-        {
-            sum += tokensPerMessage;
-            sum += encoding.countTokens( message.getContent() );
-            sum += encoding.countTokens( message.getRole() );
-        }
-
-        sum += 3; // every reply is primed with <|start|>assistant<|message|>
-
-        return sum;
-    }
 }

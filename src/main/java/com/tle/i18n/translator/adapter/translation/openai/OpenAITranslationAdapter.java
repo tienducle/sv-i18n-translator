@@ -1,5 +1,8 @@
 package com.tle.i18n.translator.adapter.translation.openai;
 
+import com.knuddels.jtokkit.Encodings;
+import com.knuddels.jtokkit.api.Encoding;
+import com.knuddels.jtokkit.api.EncodingRegistry;
 import com.tle.i18n.translator.adapter.translation.TranslationAdapter;
 import com.tle.i18n.translator.translation.TranslationRequest;
 import com.tle.i18n.translator.translation.TranslationResult;
@@ -14,6 +17,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Component
 @ConditionalOnProperty( value = "translation.adapter", havingValue = "OpenAI" )
@@ -21,6 +25,8 @@ import java.util.Arrays;
 public class OpenAITranslationAdapter extends TranslationAdapter
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( OpenAITranslationAdapter.class );
+
+    private final EncodingRegistry registry = Encodings.newDefaultEncodingRegistry();
 
     private final OpenAITranslationAdapterConfiguration config;
 
@@ -77,10 +83,26 @@ public class OpenAITranslationAdapter extends TranslationAdapter
             LOGGER.warn( String.format( "Retrying with temperature %s and n %s", temperature, requestedTranslations ) );
         }
 
+        ChatCompletionRequest chatCompletionRequest = createTranslationRequest( temperature, requestedTranslations, originalText );
+        // request 50% more tokens than the sum of all message tokens
+        final int requestMaxTokens = (int) ( countMessageTokens( chatCompletionRequest.getModel(), chatCompletionRequest.getMessages() ) * 1.5 )
+                                     + (int) ( chatCompletionRequest.getTemperature() * 50 );
+
+        if ( requestMaxTokens > chatCompletionRequest.getMaxTokens() )
+        {
+            return new TranslationResult( translationRequest,
+                                          String.format( "Requested tokens %s exceed max tokens %s.", requestMaxTokens, chatCompletionRequest.getMaxTokens() ),
+                                          false );
+        }
+        else
+        {
+            LOGGER.info( String.format( "Requested tokens %s", requestMaxTokens ) );
+        }
+
+        chatCompletionRequest.setMaxTokens( Math.min( chatCompletionRequest.getMaxTokens(), requestMaxTokens ) );
+
         final ChatCompletionResult completionResult = sendTranslationRequest( currentAttempt,
-                                                                              originalText,
-                                                                              temperature,
-                                                                              requestedTranslations );
+                                                                              chatCompletionRequest );
 
         // OpenAI request failed
         if ( completionResult == null )
@@ -102,12 +124,12 @@ public class OpenAITranslationAdapter extends TranslationAdapter
      *
      * @return the {@link ChatCompletionResult} if a valid response was received, null otherwise.
      */
-    public ChatCompletionResult sendTranslationRequest( int currentAttempt, String text, double temperature, int n )
+    public ChatCompletionResult sendTranslationRequest( int currentAttempt, ChatCompletionRequest chatCompletionRequest )
     {
         ChatCompletionResult completionResult = null;
         try
         {
-            completionResult = openAIClient.postChatCompletion( createTranslationRequest( temperature, n, text ) );
+            completionResult = openAIClient.postChatCompletion( chatCompletionRequest );
         }
         catch ( Exception e )
         {
@@ -147,5 +169,36 @@ public class OpenAITranslationAdapter extends TranslationAdapter
         openAiMessage.setRole( message.getRole() );
         openAiMessage.setContent( message.getContent() );
         return openAiMessage;
+    }
+
+    // from https://jtokkit.knuddels.de/docs/getting-started/recipes/chatml
+    private int countMessageTokens( String model, List<Message> messages )
+    {
+        Encoding encoding = registry.getEncodingForModel( model ).orElseThrow();
+        int tokensPerMessage;
+        if ( model.startsWith( "gpt-4" ) )
+        {
+            tokensPerMessage = 3;
+        }
+        else if ( model.startsWith( "gpt-3.5-turbo" ) )
+        {
+            tokensPerMessage = 4; // every message follows <|start|>{role/name}\n{content}<|end|>\n
+        }
+        else
+        {
+            throw new IllegalArgumentException( "Unsupported model: " + model );
+        }
+
+        int sum = 0;
+        for ( final var message : messages )
+        {
+            sum += tokensPerMessage;
+            sum += encoding.countTokens( message.getContent() );
+            sum += encoding.countTokens( message.getRole() );
+        }
+
+        sum += 3; // every reply is primed with <|start|>assistant<|message|>
+
+        return sum;
     }
 }
