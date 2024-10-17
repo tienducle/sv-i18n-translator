@@ -1,6 +1,6 @@
 @echo off
-set ORIGINAL_FILE_PATH=%1
-set TARGET_LANGUAGE=%2
+set ORIGINAL_FILE_PATH=%~1
+set TARGET_LANGUAGE=%~2
 set OPEN_AI_API_KEY=%3
 
 set SYSTEM_MESSAGE=^
@@ -16,12 +16,12 @@ Use informal language instead of formal language.^
 Respond only with the translated text.^
 If you can not translate the input, or you are unsure, respond with ^<ERROR^>.
 
-if %ORIGINAL_FILE_PATH% == "" (
+if "%ORIGINAL_FILE_PATH%" == "" (
     echo "Missing ORIGINAL_FILE_PATH (arg1)"
     exit /b 1
 )
 
-if %TARGET_LANGUAGE% == "" (
+if "%TARGET_LANGUAGE%" == "" (
     echo "Missing TARGET_LANGUAGE (arg2, e.g. German, French, Spanish, etc.)"
     exit /b 1
 )
