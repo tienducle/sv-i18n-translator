@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,6 +34,11 @@ public class RevalidateStep extends Step
     // Output file containing the translated text
     private final File translatedFile;
 
+    // Ignore file containing keys, that should be ignored during validation
+    private final File ignoreFile;
+
+    private List<String> ignoreKeys = new ArrayList<>();
+
     public RevalidateStep(
             ValidationAdapter validationAdapter,
             FileUtils fileUtils,
@@ -43,6 +50,14 @@ public class RevalidateStep extends Step
         this.fileUtils = fileUtils;
         this.originalFile = new File( originalFilePath );
         this.translatedFile = new File( fileUtils.getTranslatedFilePath( originalFilePath, targetLanguage ) );
+        this.ignoreFile = new File( fileUtils.getIgnoreFilePath( originalFilePath, targetLanguage ) );
+        if ( ignoreFile.exists() )
+        {
+            // read line by line
+            ignoreKeys.addAll( fileUtils.getIgnoreKeysFromFile( ignoreFile ) );
+            LOGGER.info( "Ignoring keys: {}", String.join( ", ", ignoreKeys ) );
+        }
+
         LOGGER.info( "Initialized RevalidateStep" );
     }
 
@@ -87,13 +102,22 @@ public class RevalidateStep extends Step
             }
 
             // revalidate with current validation rules
-            if ( !validationAdapter.accept( originalText, translatedText, true ) )
+            if ( validationAdapter.accept( originalText, translatedText, true ) )
             {
-                LOGGER.info( String.format( "Existing translation does not pass current validation. Adding <ERROR> tag to '%s'", key ) );
-                translatedFileLines.put( key, ValidationAdapter.TRANSLATION_ERROR_VALUE + " " + originalText + "<EXISTING_TRANSLATION>: " + translatedText );
-                fileUtils.flushToFile( translatedFile, translatedFileLines );
-                outdatedTranslations++;
+                continue;
             }
+
+            // check if the key should be ignored
+            if ( ignoreKeys.contains( key ) )
+            {
+                LOGGER.info( "Existing translation does not pass current validation, but '{}' is in ignore list.", key );
+                continue;
+            }
+
+            LOGGER.info( String.format( "Existing translation does not pass current validation. Adding <ERROR> tag to '%s'", key ) );
+            translatedFileLines.put( key, ValidationAdapter.TRANSLATION_ERROR_VALUE + " " + originalText + "<EXISTING_TRANSLATION>: " + translatedText );
+            fileUtils.flushToFile( translatedFile, translatedFileLines );
+            outdatedTranslations++;
         }
 
         LOGGER.info( String.format( "Number of outdated translations: %d", outdatedTranslations ) );
