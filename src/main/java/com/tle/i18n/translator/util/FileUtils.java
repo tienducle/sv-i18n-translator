@@ -13,15 +13,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 @Component
 @Lazy
@@ -100,5 +96,51 @@ public class FileUtils
     {
         final String targetLanguageCode = localeUtils.getCountryCodeForLanguage( targetLanguage );
         return originalFilePath.replace( "default.json", targetLanguageCode + ".json" );
+    }
+
+    /**
+     * Returns the path to the ignore file for the given target language
+     *
+     * If the input is "/path/to/default.json", "German"
+     * the method will return "/path/to/de.ignore"
+     *
+     * @param originalFilePath the path to the original file (e.g. /path/to/default.json)
+     * @param targetLanguage the target language (e.g. German)
+     *
+     * @return the path to the ignore file
+     */
+    public String getIgnoreFilePath( String originalFilePath, String targetLanguage )
+    {
+        final String targetLanguageCode = localeUtils.getCountryCodeForLanguage( targetLanguage );
+        return originalFilePath.replace( "default.json", targetLanguageCode + ".ignore" );
+    }
+
+    /**
+     * Reads the ignore file and returns a list of keys to ignore
+     *
+     * @param ignoreFile the file containing the keys to ignore
+     *
+     * @return a list of keys to ignore
+     */
+    public List<String> getIgnoreKeysFromFile( File ignoreFile )
+    {
+        List<String> ignoreKeys = new ArrayList<>();
+        try ( BufferedReader bufferedReader = new BufferedReader( new FileReader( ignoreFile ) ) )
+        {
+            String line;
+            while ( ( line = bufferedReader.readLine() ) != null )
+            {
+                if ( line.startsWith( "/" ) || line.startsWith( "#" ) || line.isEmpty() )
+                {
+                    continue;
+                }
+                ignoreKeys.add( line );
+            }
+        }
+        catch ( IOException e )
+        {
+            LOGGER.error( "Error reading ignore file: {}", ignoreFile, e );
+        }
+        return ignoreKeys;
     }
 }
