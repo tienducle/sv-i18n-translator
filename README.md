@@ -24,7 +24,7 @@ In any case, as with every content created using LLM/GPT, you should always doub
 
 ### Requirements
 
-- JDK >11
+- JDK >17
 - Maven 3.x
 - OpenAI API key
 
