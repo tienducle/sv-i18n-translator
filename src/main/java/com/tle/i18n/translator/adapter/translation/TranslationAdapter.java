@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -80,6 +81,10 @@ public abstract class TranslationAdapter
 
     protected Iterator<Message> getHistoryMessages()
     {
+        if ( maxHistorySize == 0 )
+        {
+            return Collections.emptyIterator();
+        }
         return history.iterator();
     }
 
