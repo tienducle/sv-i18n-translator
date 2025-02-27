@@ -81,7 +81,9 @@ public abstract class ValidationAdapter
     }
 
     /**
-     * Given the original text and the translated text, check if the translated text
+     * Given the original text and the translated text,
+     * check if the translated text contains any of the rejection strings.
+     *
      * @param originalText
      * @param translatedText
      * @return
