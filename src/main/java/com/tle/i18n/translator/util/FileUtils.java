@@ -95,7 +95,8 @@ public class FileUtils
     public String getTranslatedFilePath( String originalFilePath, String targetLanguage )
     {
         final String targetLanguageCode = localeUtils.getCountryCodeForLanguage( targetLanguage );
-        return originalFilePath.replace( "default.json", targetLanguageCode + ".json" );
+        return originalFilePath.replace( originalFilePath.substring( originalFilePath.lastIndexOf( "/" )+1 ),
+                                         targetLanguageCode + ".json" );
     }
 
     /**
@@ -112,7 +113,8 @@ public class FileUtils
     public String getIgnoreFilePath( String originalFilePath, String targetLanguage )
     {
         final String targetLanguageCode = localeUtils.getCountryCodeForLanguage( targetLanguage );
-        return originalFilePath.replace( "default.json", targetLanguageCode + ".ignore" );
+        return originalFilePath.replace( originalFilePath.substring( originalFilePath.lastIndexOf( "/" )+1 ),
+                                         targetLanguageCode + ".ignore" );
     }
 
     /**
