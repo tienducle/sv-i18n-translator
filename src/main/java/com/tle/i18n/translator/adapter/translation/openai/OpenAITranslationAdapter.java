@@ -35,8 +35,8 @@ public class OpenAITranslationAdapter extends TranslationAdapter
     private final Message systemMessage;
 
     private final double maxTemperature = 2.0;
-    private final int maxN = 16;
-    private final int adapterMaxAttempts = 4;
+    private final int maxN = 7;
+    private final int adapterMaxAttempts = 3;
 
     public OpenAITranslationAdapter( OpenAITranslationAdapterConfiguration config )
     {
@@ -70,12 +70,11 @@ public class OpenAITranslationAdapter extends TranslationAdapter
 
         // 0.2, 0.8, 1.4, max 2.0
         final double temperature = Math.min(
-                // round up to 1 decimal digit
-                Math.ceil( ( config.getInitTemperature() + ( config.getTemperatureIncrement() * totalAttempts ) * 10 ) ) / 10,
+                Math.ceil( ( config.getInitTemperature() + config.getTemperatureIncrement() * totalAttempts ) * 10 ) / 10,
                 maxTemperature );
 
-        // 1, 6, 11, max. 16
-        final int requestedTranslations = Math.min( config.getN() + ( 5 * totalAttempts ),
+        // 1, 3, 5, 7
+        final int requestedTranslations = Math.min( config.getN() + ( 3 * totalAttempts ),
                                                     maxN );
 
         if ( currentAttempt > 1 )
@@ -85,22 +84,9 @@ public class OpenAITranslationAdapter extends TranslationAdapter
         }
 
         ChatCompletionRequest chatCompletionRequest = createTranslationRequest( temperature, requestedTranslations, originalText );
-        // request 50% more tokens than the sum of all message tokens
-        final int requestMaxTokens = (int) ( countMessageTokens( chatCompletionRequest.getModel(), chatCompletionRequest.getMessages() ) * 1.5 )
-                                     + (int) ( chatCompletionRequest.getTemperature() * 50 );
 
-        if ( requestMaxTokens > chatCompletionRequest.getMaxTokens() )
-        {
-            return new TranslationResult( translationRequest,
-                                          String.format( "Requested tokens %s exceed max tokens %s.", requestMaxTokens, chatCompletionRequest.getMaxTokens() ),
-                                          false );
-        }
-        else
-        {
-            LOGGER.info( String.format( "Requested tokens %s", requestMaxTokens ) );
-        }
-
-        chatCompletionRequest.setMaxTokens( Math.min( chatCompletionRequest.getMaxTokens(), requestMaxTokens ) );
+        final int inputTokensEstimation = countMessageTokens( chatCompletionRequest.getModel(), chatCompletionRequest.getMessages() );
+        LOGGER.info( String.format( "Input tokens estimation: %s", inputTokensEstimation ) );
 
         final ChatCompletionResult completionResult = sendTranslationRequest( currentAttempt,
                                                                               chatCompletionRequest );
@@ -147,7 +133,6 @@ public class OpenAITranslationAdapter extends TranslationAdapter
     private ChatCompletionRequest createTranslationRequest( double temperature, int count, String originalText )
     {
         final ChatCompletionRequest request = new ChatCompletionRequest( this.config.getModel(),
-                                                                         this.config.getMaxTokens(),
                                                                          temperature,
                                                                          count );
 
@@ -175,19 +160,18 @@ public class OpenAITranslationAdapter extends TranslationAdapter
     // from https://jtokkit.knuddels.de/docs/getting-started/recipes/chatml
     private int countMessageTokens( String model, List<Message> messages )
     {
-        Encoding encoding = registry.getEncodingForModel( model ).orElseThrow();
+        Encoding encoding = model.startsWith( "gpt-5" )
+                            ? registry.getEncodingForModel( "gpt-4o" ).get()
+                            : registry.getEncodingForModel( model ).orElseThrow();
+
         int tokensPerMessage;
-        if ( model.startsWith( "gpt-4" ) )
-        {
-            tokensPerMessage = 3;
-        }
-        else if ( model.startsWith( "gpt-3.5-turbo" ) )
+        if ( model.startsWith( "gpt-3.5-turbo" ) )
         {
             tokensPerMessage = 4; // every message follows <|start|>{role/name}\n{content}<|end|>\n
         }
         else
         {
-            throw new IllegalArgumentException( "Unsupported model: " + model );
+            tokensPerMessage = 3;
         }
 
         int sum = 0;

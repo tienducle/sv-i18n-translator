@@ -19,11 +19,11 @@ public class OpenAITranslationAdapterConfiguration
     private final String systemMessageText;
 
     public OpenAITranslationAdapterConfiguration( @Value( "${translation.adapter.openai.apiKey:}" ) String apiKey,
-                                                  @Value( "${translation.adapter.translation.openai.chat.model:}" ) String model,
+                                                  @Value( "${translation.adapter.openai.chat.model:}" ) String model,
                                                   @Value( "${translation.adapter.openai.chat.maxTokens:2000}" ) int maxTokens,
                                                   @Value( "${translation.adapter.openai.chat.initTemperature:0.2}" ) double initTemperature,
                                                   @Value( "${translation.adapter.openai.chat.temperatureIncrement:0.6}" ) double temperatureIncrement,
-                                                  @Value( "${adapter.translation.openai.chat.n:1}" ) int n,
+                                                  @Value( "${translation.adapter.openai.chat.n:1}" ) int n,
                                                   @Value( "${translation.adapter.openai.chat.systemMessage:}" ) String systemMessage )
     {
         this.apiKey = apiKey;
