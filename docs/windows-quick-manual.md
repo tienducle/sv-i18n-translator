@@ -4,7 +4,7 @@
 
 ### OpenAI API key
 
-The bundled scripts are configured to translate the input text to german using OpenAI API (gpt-4-turbo-preview).  Therefore you must obtain an API key first. Since OpenAI switch to a prepaid model, you may need to charge your account first.
+The bundled scripts are configured to translate the input text to german using OpenAI API (gpt-5.1). Therefore you must obtain an API key first. Since OpenAI uses a prepaid model, you'll need to charge your account first.
 
 ### Java Development Kit (JDK)
 

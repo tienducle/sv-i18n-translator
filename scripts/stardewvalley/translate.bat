@@ -37,8 +37,7 @@ java ^
 -DtargetLanguage="%TARGET_LANGUAGE%" ^
 -Dtranslation.adapter=OpenAI ^
 -Dtranslation.adapter.openai.apiKey="%OPEN_AI_API_KEY%" ^
--Dtranslation.adapter.translation.openai.chat.model=gpt-4-turbo-preview ^
--Dtranslation.adapter.openai.chat.maxTokens=4000 ^
+-Dtranslation.adapter.translation.openai.chat.model=gpt-5.1 ^
 -Dtranslation.adapter.openai.chat.initTemperature=0.2 ^
 -Dtranslation.adapter.openai.chat.temperatureIncrement=0.6 ^
 -Dtranslation.adapter.openai.chat.systemMessage="%SYSTEM_MESSAGE%" ^

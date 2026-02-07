@@ -7,10 +7,7 @@ import java.util.List;
 
 public class ChatCompletionRequest
 {
-    private String model = "gpt-3.5-turbo";
-
-    @SerializedName( value = "max_tokens", alternate = { "maxTokens" } )
-    private int maxTokens = 2000;
+    private String model = "gpt-5.1";
 
     private double temperature = 1.0;
 
@@ -21,15 +18,13 @@ public class ChatCompletionRequest
     public ChatCompletionRequest( ChatCompletionConfiguration chatCompletionConfiguration )
     {
         this( chatCompletionConfiguration.getModel(),
-              chatCompletionConfiguration.getMaxTokens(),
               chatCompletionConfiguration.getInitTemperature(),
               chatCompletionConfiguration.getN() );
     }
 
-    public ChatCompletionRequest( String model, int maxTokens, double temperature, int n )
+    public ChatCompletionRequest( String model, double temperature, int n )
     {
         this.model = model;
-        this.maxTokens = maxTokens;
         this.temperature = temperature;
         this.n = n;
     }
@@ -42,16 +37,6 @@ public class ChatCompletionRequest
     public void setModel( String model )
     {
         this.model = model;
-    }
-
-    public int getMaxTokens()
-    {
-        return maxTokens;
-    }
-
-    public void setMaxTokens( int maxTokens )
-    {
-        this.maxTokens = maxTokens;
     }
 
     public double getTemperature()
