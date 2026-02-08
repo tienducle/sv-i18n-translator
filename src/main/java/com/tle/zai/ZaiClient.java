@@ -15,7 +15,7 @@ public class ZaiClient extends AbstractApiClient
 
     private final String scheme = "https";
     private final String host = "api.z.ai";
-    private final String V4 = "api/paas/v4";
+    private final String V4 = "api/coding/paas/v4";
 
     private final String bearerToken;
 
