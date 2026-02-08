@@ -36,7 +36,7 @@ public class ZaiTranslationAdapter extends TranslationAdapter
     {
         LOGGER.info( "Initializing ZaiTranslationAdapter" );
         this.config = config;
-        this.zaiClient = new ZaiClient( config.getApiKey() );
+        this.zaiClient = new ZaiClient( config.getApiKey(), config.isUseCodingPlan() );
 
         this.systemMessage = new Message();
         systemMessage.setRole( "system" );

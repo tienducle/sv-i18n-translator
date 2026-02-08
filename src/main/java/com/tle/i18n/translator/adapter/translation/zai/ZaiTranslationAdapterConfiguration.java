@@ -15,6 +15,7 @@ public class ZaiTranslationAdapterConfiguration
     private final double temperatureIncrement;
     private final int n;
     private final String systemMessageText;
+    private final boolean useCodingPlan;
 
     public ZaiTranslationAdapterConfiguration( @Value( "${translation.adapter.zai.apiKey:}" ) String apiKey,
                                                 @Value( "${translation.adapter.zai.chat.model:}" ) String model,
@@ -22,7 +23,8 @@ public class ZaiTranslationAdapterConfiguration
                                                 @Value( "${translation.adapter.zai.chat.initTemperature:0.2}" ) double initTemperature,
                                                 @Value( "${translation.adapter.zai.chat.temperatureIncrement:0.6}" ) double temperatureIncrement,
                                                 @Value( "${translation.adapter.zai.chat.n:1}" ) int n,
-                                                @Value( "${translation.adapter.zai.chat.systemMessage:}" ) String systemMessage )
+                                                @Value( "${translation.adapter.zai.chat.systemMessage:}" ) String systemMessage,
+                                                @Value( "${translation.adapter.zai.useCodingPlan:true}" ) boolean useCodingPlan )
     {
         this.apiKey = apiKey;
         this.model = model;
@@ -31,6 +33,7 @@ public class ZaiTranslationAdapterConfiguration
         this.temperatureIncrement = temperatureIncrement;
         this.n = n;
         this.systemMessageText = systemMessage;
+        this.useCodingPlan = useCodingPlan;
     }
 
     public String getApiKey()
@@ -66,5 +69,10 @@ public class ZaiTranslationAdapterConfiguration
     public String getSystemMessageText()
     {
         return systemMessageText;
+    }
+
+    public boolean isUseCodingPlan()
+    {
+        return useCodingPlan;
     }
 }
