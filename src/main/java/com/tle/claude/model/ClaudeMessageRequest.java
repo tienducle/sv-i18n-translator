@@ -7,6 +7,8 @@ import java.util.List;
 public class ClaudeMessageRequest
 {
     private String model;
+
+    @SerializedName( "max_tokens" )
     private int maxTokens = 4096;
     private double temperature = 1.0;
 
