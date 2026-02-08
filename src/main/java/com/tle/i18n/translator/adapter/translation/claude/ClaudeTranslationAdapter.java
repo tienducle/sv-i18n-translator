@@ -1,19 +1,20 @@
 package com.tle.i18n.translator.adapter.translation.claude;
 
 import com.tle.claude.ClaudeClient;
+import com.tle.claude.model.ClaudeMessage;
+import com.tle.claude.model.ClaudeMessageRequest;
+import com.tle.claude.model.ClaudeMessageResponse;
 import com.tle.i18n.translator.adapter.translation.TranslationAdapter;
 import com.tle.i18n.translator.translation.TranslationRequest;
 import com.tle.i18n.translator.translation.TranslationResult;
-import com.tle.openai.model.chat.ChatCompletionRequest;
-import com.tle.openai.model.chat.ChatCompletionResult;
-import com.tle.openai.model.chat.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 @ConditionalOnProperty( value = "translation.adapter", havingValue = "Claude" )
@@ -26,10 +27,9 @@ public class ClaudeTranslationAdapter extends TranslationAdapter
 
     private final ClaudeClient claudeClient;
 
-    private final Message systemMessage;
+    private final String systemMessage;
 
     private final double maxTemperature = 1.0;
-    private final int maxN = 5;
     private final int adapterMaxAttempts = 3;
 
     public ClaudeTranslationAdapter( ClaudeTranslationAdapterConfiguration config )
@@ -37,11 +37,9 @@ public class ClaudeTranslationAdapter extends TranslationAdapter
         LOGGER.info( "Initializing ClaudeTranslationAdapter" );
         this.config = config;
         this.claudeClient = new ClaudeClient( config.getApiKey() );
-
-        this.systemMessage = new Message();
-        systemMessage.setRole( "system" );
-        systemMessage.setContent( config.getSystemMessageText() );
+        this.systemMessage = config.getSystemMessageText();
         LOGGER.info( "Model: {}", config.getModel() );
+        LOGGER.info( "Max tokens: {}", config.getMaxTokens() );
         LOGGER.info( "System message:" );
         LOGGER.info( config.getSystemMessageText() );
         LOGGER.info( "Initialized ClaudeTranslationAdapter" );
@@ -50,101 +48,88 @@ public class ClaudeTranslationAdapter extends TranslationAdapter
     @Override
     public TranslationResult translate( TranslationRequest translationRequest )
     {
-        // how many attempts were made to translate the text
         final int totalAttempts = translationRequest.getTotalAttempts();
         final int currentAttempt = translationRequest.getCurrentAttempt();
 
         if ( currentAttempt > adapterMaxAttempts )
         {
-            // hard limit of adapter
             return new TranslationResult( translationRequest, "Claude adapter max attempts to translate text reached", false );
         }
 
         final String originalText = translationRequest.getOriginalText();
 
-        // 0.2, 0.6, 1.0, max 1.0
         final double temperature = Math.min(
                 Math.ceil( ( config.getInitTemperature() + config.getTemperatureIncrement() * totalAttempts ) * 10 ) / 10,
                 maxTemperature );
 
-        // 1, 2, 3, 5
-        final int requestedTranslations = Math.min( config.getN() + ( 1 * totalAttempts ),
-                                                    maxN );
+        final int count = Math.min( config.getN(), 1 );
 
         if ( currentAttempt > 1 )
         {
             LOGGER.warn( "------" );
-            LOGGER.warn( String.format( "Retrying with temperature %s and n %s", temperature, requestedTranslations ) );
+            LOGGER.warn( String.format( "Retrying with temperature %s", temperature ) );
         }
 
-        ChatCompletionRequest chatCompletionRequest = createTranslationRequest( temperature, requestedTranslations, originalText );
+        ClaudeMessageRequest messageRequest = createTranslationRequest( temperature, count, originalText );
 
-        final ChatCompletionResult completionResult = sendTranslationRequest( currentAttempt,
-                                                                              chatCompletionRequest );
+        final List<ClaudeMessageResponse> responses = sendTranslationRequest( currentAttempt, messageRequest, count );
 
-        // Claude request failed
-        if ( completionResult == null )
+        if ( responses == null || responses.isEmpty() || responses.get( 0 ) == null )
         {
             return new TranslationResult( translationRequest,
-                                          "ChatCompletion request failed.",
+                                          "Claude request failed.",
                                           currentAttempt <= getMaxAttempts() );
         }
 
-        // Claude request succeeded
         final TranslationResult translationResult = new TranslationResult( translationRequest );
-        Arrays.stream( completionResult.getChoices() )
-              .forEach( choice -> translationResult.addTranslatedText( choice.getMessage().getContent() ) );
+        for ( ClaudeMessageResponse response : responses )
+        {
+            if ( response != null )
+            {
+                translationResult.addTranslatedText( response.getTextContent() );
+            }
+        }
         return translationResult;
     }
 
-    /**
-     * Sends a ChatCompletion request to translate the given text.
-     *
-     * @return the {@link ChatCompletionResult} if a valid response was received, null otherwise.
-     */
-    public ChatCompletionResult sendTranslationRequest( int currentAttempt, ChatCompletionRequest chatCompletionRequest )
+    private List<ClaudeMessageResponse> sendTranslationRequest( int currentAttempt, ClaudeMessageRequest messageRequest, int count )
     {
-        ChatCompletionResult completionResult = null;
-        try
+        List<ClaudeMessageResponse> responses = new ArrayList<>();
+        for ( int i = 0; i < count; i++ )
         {
-            completionResult = claudeClient.postChatCompletion( chatCompletionRequest );
+            try
+            {
+                ClaudeMessageResponse response = claudeClient.postMessage( messageRequest );
+                responses.add( response );
+            }
+            catch ( Exception e )
+            {
+                LOGGER.error( String.format( "Error while sending Claude request (attempt %s, request %s): ", currentAttempt, i + 1 ), e );
+            }
         }
-        catch ( Exception e )
-        {
-            LOGGER.error( String.format( "Error while sending ChatCompletion request (attempt %s): ", currentAttempt ), e );
-        }
-        return completionResult;
+        return responses;
     }
 
-    /**
-     * Creates a {@link ChatCompletionRequest} to translate the given text.
-     *
-     * @return {@link ChatCompletionRequest}
-     */
-    private ChatCompletionRequest createTranslationRequest( double temperature, int count, String originalText )
+    private ClaudeMessageRequest createTranslationRequest( double temperature, int count, String originalText )
     {
-        final ChatCompletionRequest request = new ChatCompletionRequest( this.config.getModel(),
-                                                                         temperature,
-                                                                         count );
-
-        request.addMessage( this.systemMessage );
+        ClaudeMessageRequest request = new ClaudeMessageRequest(
+                config.getModel(),
+                temperature,
+                config.getMaxTokens(),
+                systemMessage
+        );
 
         getContextMessages().forEach( message -> request.addMessage( toClaudeMessage( message ) ) );
         getHistoryMessages().forEachRemaining( message -> request.addMessage( toClaudeMessage( message ) ) );
 
-        Message translationMessage = new Message();
-        translationMessage.setRole( "user" );
-        translationMessage.setContent( originalText );
+        ClaudeMessage translationMessage = new ClaudeMessage( "user", originalText );
         request.addMessage( translationMessage );
 
         return request;
     }
 
-    private Message toClaudeMessage( com.tle.i18n.translator.common.Message message )
+    private ClaudeMessage toClaudeMessage( com.tle.i18n.translator.common.Message message )
     {
-        final Message claudeMessage = new Message();
-        claudeMessage.setRole( message.getRole() );
-        claudeMessage.setContent( message.getContent() );
-        return claudeMessage;
+        return new ClaudeMessage( message.getRole(), message.getContent() );
     }
 }
