@@ -14,27 +14,37 @@ The tool is meant to be used as a dev tool by mod creators. It still has some ro
 - Retains formatting of source file
 - Configurable validations
   - Checks for dialogue control sequences (see [src/main/resources/validation/stardewvalley.json](src/main/resources/validation/stardewvalley.json))
-- Uses OpenAI API for translations
-  - Currently uses simple zero-shot prompting 
+- Multiple translation adapters supported:
+  - **OpenAI** - Uses gpt-5.1 by default
+  - **Anthropic** - Uses claude-sonnet-4-5 by default
+  - **Gemini** - Uses gemini-3-pro-preview by default
+  - **Zai** - Uses glm-4.7 by default
+  - **DeepL** - Professional translation service
+  - **Ollama** - Local LLM via REST API
+  - **Manual** - For testing purposes
+- Uses simple zero-shot prompting
   - If a validation fails, it will retry with higher temperature
-- Preliminary support for Ollama (via Rest API) and DeepL API 
-  - Initial results were not satisfying, this would need more work
 
 ## Usage
 
 ### Requirements
 
-- JDK >17
+- JDK > 11
 - Maven 3.x
-- OpenAI API key
+- API key for your chosen translation service:
+  - OpenAI: https://platform.openai.com/api-keys
+  - Anthropic: https://console.anthropic.com/settings/keys
+  - Gemini: https://aistudio.google.com/app/apikey
+  - Zai: https://open.bigmodel.cn/usercenter/apikeys
+  - DeepL: https://www.deepl.com/pro-api
 
 ### Run using scripts
 
 Clone repository or download repository as zip. A jar file is included under `/target/sv-i18n-translator.jar`.
 
-The bundled scripts are configured to translate the input text to german using OpenAI API (gpt-5.1). Therefore, you must obtain an API key first. Since OpenAI uses a prepaid model, you'll need to charge your account first.
+The bundled scripts are configured to translate the input text to German using your chosen LLM adapter (OpenAI, Anthropic, Gemini, or Zai). You must obtain an API key for your chosen service first.
 
-The system message can be found and modified in the [translate.sh script](scripts/stardewvalley/translate.sh).
+See the [Windows Quick Manual](docs/windows-quick-manual.md) or [General Manual](docs/general-manual.md) for configuration options and adapter-specific settings.
 
 ```bash
 cd scripts/stardewvalley
@@ -61,21 +71,28 @@ In the example below, the sync step is executed. Since the target file doesn't e
 
 #### Translate
 
-This will translate the target file using the OpenAI API.
+This will translate the target file using the configured LLM API.
 
-The OpenAI API key must be additionally provided here.
+The API key must be provided either as an environment variable or as a parameter.
 
 ```bash
-# Usage (with Open AI API key set as environment variable):
+# Usage (with API key set as environment variable):
 # ./translate.sh "/path/to/source/default.json" "Language"
 
-export OPEN_AI_API_KEY="sk-..."
+export OPEN_AI_API_KEY="sk-..."      # For OpenAI
+# or
+export ANTHROPIC_API_KEY="sk-..."    # For Anthropic
+# or
+export GEMINI_API_KEY="..."          # For Gemini
+# or
+export ZAI_API_KEY="..."             # For Zai
+
 ./translate.sh "../../src/test/resources/data/text/default.json" "German"
 ```
 
 ```bash
-# Usage (with Open AI API key as 3rd parameter):
-# ./translate.sh "/path/to/source/default.json" "Language" "Open AI API Key"
+# Usage (with API key as 3rd parameter):
+# ./translate.sh "/path/to/source/default.json" "Language" "API Key"
 
 ./translate.sh "../../src/test/resources/data/text/default.json" "German" "sk-..."
 ```
