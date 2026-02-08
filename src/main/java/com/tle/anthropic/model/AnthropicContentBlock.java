@@ -1,6 +1,6 @@
-package com.tle.claude.model;
+package com.tle.anthropic.model;
 
-public class ClaudeContentBlock
+public class AnthropicContentBlock
 {
     private String type;
 

@@ -1,12 +1,12 @@
-package com.tle.i18n.translator.adapter.translation.claude;
+package com.tle.i18n.translator.adapter.translation.anthropic;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConditionalOnProperty( value = "translation.adapter", havingValue = "Claude" )
-public class ClaudeTranslationAdapterConfiguration
+@ConditionalOnProperty( value = "translation.adapter", havingValue = "Anthropic" )
+public class AnthropicTranslationAdapterConfiguration
 {
     private final String apiKey;
     private final String model;
@@ -16,13 +16,13 @@ public class ClaudeTranslationAdapterConfiguration
     private final int n;
     private final String systemMessageText;
 
-    public ClaudeTranslationAdapterConfiguration( @Value( "${translation.adapter.claude.apiKey:}" ) String apiKey,
-                                                  @Value( "${translation.adapter.claude.chat.model:}" ) String model,
-                                                  @Value( "${translation.adapter.claude.chat.maxTokens:2000}" ) int maxTokens,
-                                                  @Value( "${translation.adapter.claude.chat.initTemperature:0.2}" ) double initTemperature,
-                                                  @Value( "${translation.adapter.claude.chat.temperatureIncrement:0.6}" ) double temperatureIncrement,
-                                                  @Value( "${translation.adapter.claude.chat.n:1}" ) int n,
-                                                  @Value( "${translation.adapter.claude.chat.systemMessage:}" ) String systemMessage )
+    public AnthropicTranslationAdapterConfiguration( @Value( "${translation.adapter.anthropic.apiKey:}" ) String apiKey,
+                                                     @Value( "${translation.adapter.anthropic.model:}" ) String model,
+                                                     @Value( "${translation.adapter.anthropic.maxTokens:${translation.adapter.maxTokens:2000}}" ) int maxTokens,
+                                                     @Value( "${translation.adapter.anthropic.initTemperature:${translation.adapter.initTemperature:0.2}}" ) double initTemperature,
+                                                     @Value( "${translation.adapter.anthropic.temperatureIncrement:${translation.adapter.temperatureIncrement:0.6}}" ) double temperatureIncrement,
+                                                     @Value( "${translation.adapter.anthropic.n:1}" ) int n,
+                                                     @Value( "${translation.adapter.anthropic.systemMessage:${translation.adapter.systemMessage:}}" ) String systemMessage )
     {
         this.apiKey = apiKey;
         this.model = model;

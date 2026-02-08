@@ -1,10 +1,10 @@
-package com.tle.claude.model;
+package com.tle.anthropic.model;
 
 import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClaudeMessageRequest
+public class AnthropicMessageRequest
 {
     private String model;
 
@@ -13,11 +13,11 @@ public class ClaudeMessageRequest
     private double temperature = 1.0;
 
     @SerializedName( "messages" )
-    private List<ClaudeMessage> messages = new ArrayList<>();
+    private List<AnthropicMessage> messages = new ArrayList<>();
 
     private String system;
 
-    public ClaudeMessageRequest( String model, double temperature, int maxTokens, String system )
+    public AnthropicMessageRequest( String model, double temperature, int maxTokens, String system )
     {
         this.model = model;
         this.temperature = temperature;
@@ -25,7 +25,7 @@ public class ClaudeMessageRequest
         this.system = system;
     }
 
-    public void addMessage( ClaudeMessage message )
+    public void addMessage( AnthropicMessage message )
     {
         this.messages.add( message );
     }
@@ -60,7 +60,7 @@ public class ClaudeMessageRequest
         this.temperature = temperature;
     }
 
-    public List<ClaudeMessage> getMessages()
+    public List<AnthropicMessage> getMessages()
     {
         return messages;
     }

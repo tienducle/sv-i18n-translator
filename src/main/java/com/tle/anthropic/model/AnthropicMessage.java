@@ -1,18 +1,18 @@
-package com.tle.claude.model;
+package com.tle.anthropic.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class ClaudeMessage
+public class AnthropicMessage
 {
     private String role;
 
     private String content;
 
-    public ClaudeMessage()
+    public AnthropicMessage()
     {
     }
 
-    public ClaudeMessage( String role, String content )
+    public AnthropicMessage( String role, String content )
     {
         this.role = role;
         this.content = content;

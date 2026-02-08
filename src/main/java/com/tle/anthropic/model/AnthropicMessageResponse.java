@@ -1,9 +1,9 @@
-package com.tle.claude.model;
+package com.tle.anthropic.model;
 
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
-public class ClaudeMessageResponse
+public class AnthropicMessageResponse
 {
     private String id;
 
@@ -11,13 +11,13 @@ public class ClaudeMessageResponse
 
     private String role;
 
-    private List<ClaudeContentBlock> content;
+    private List<AnthropicContentBlock> content;
 
     private String model;
 
-    private ClaudeStopReason stopReason;
+    private AnthropicStopReason stopReason;
 
-    private ClaudeUsage usage;
+    private AnthropicUsage usage;
 
     public String getId()
     {
@@ -34,7 +34,7 @@ public class ClaudeMessageResponse
         return role;
     }
 
-    public List<ClaudeContentBlock> getContent()
+    public List<AnthropicContentBlock> getContent()
     {
         return content;
     }
@@ -44,12 +44,12 @@ public class ClaudeMessageResponse
         return model;
     }
 
-    public ClaudeStopReason getStopReason()
+    public AnthropicStopReason getStopReason()
     {
         return stopReason;
     }
 
-    public ClaudeUsage getUsage()
+    public AnthropicUsage getUsage()
     {
         return usage;
     }

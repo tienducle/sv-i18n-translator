@@ -1,17 +1,17 @@
-package com.tle.claude;
+package com.tle.anthropic;
 
 import com.google.gson.reflect.TypeToken;
-import com.tle.claude.model.ClaudeMessageRequest;
-import com.tle.claude.model.ClaudeMessageResponse;
+import com.tle.anthropic.model.AnthropicMessageRequest;
+import com.tle.anthropic.model.AnthropicMessageResponse;
 import com.tle.http.AbstractApiClient;
 import okhttp3.HttpUrl;
 import okhttp3.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ClaudeClient extends AbstractApiClient
+public class AnthropicClient extends AbstractApiClient
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger( ClaudeClient.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( AnthropicClient.class );
 
     private final String scheme = "https";
     private final String host = "api.anthropic.com";
@@ -19,13 +19,13 @@ public class ClaudeClient extends AbstractApiClient
 
     private final String apiKey;
 
-    public ClaudeClient( String apiKey )
+    public AnthropicClient( String apiKey )
     {
-        LOGGER.info( "Initializing ClaudeClient with key " + apiKey.substring( 0, Math.min( 4, apiKey.length() ) ) + "..." );
+        LOGGER.info( "Initializing AnthropicClient with key " + apiKey.substring( 0, Math.min( 4, apiKey.length() ) ) + "..." );
         this.apiKey = apiKey;
     }
 
-    public ClaudeMessageResponse postMessage( ClaudeMessageRequest messageRequest )
+    public AnthropicMessageResponse postMessage( AnthropicMessageRequest messageRequest )
     {
         final HttpUrl.Builder httpUrlBuilder = new HttpUrl.Builder()
                 .scheme( scheme )
@@ -39,6 +39,6 @@ public class ClaudeClient extends AbstractApiClient
                                                      .addHeader( "Content-Type", "application/json" )
                                                      .build();
 
-        return executeRequest( request, TypeToken.get( ClaudeMessageResponse.class ).getType() );
+        return executeRequest( request, TypeToken.get( AnthropicMessageResponse.class ).getType() );
     }
 }
