@@ -6,8 +6,8 @@ I've used it to create translations for Stardew Valley Expanded and Ridgeside Vi
 
 The tool is meant to be used as a dev tool by mod creators. It still has some rough edges and may or may not work for you.
 
-# ⚠️ Disclaimer ⚠️
-In any case, as with every content created using LLM/GPT, you should always double-check the results. They're often "good enough" but by no means perfect.
+> [!IMPORTANT]
+> In any case, as with every content created using LLM/GPT, you should always double-check the results. They're often "good enough" but by no means perfect.
 
 ## Features
 - Automatically synchronizes added/removed keys of source file to target file
