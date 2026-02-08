@@ -10,10 +10,12 @@
       * [2.1.2 targetLanguage](#212-targetlanguage)
       * [2.1.3 runModes](#213-runmodes)
   * [2.2 Translation Adapter properties](#22-translation-adapter-properties)
-    * [2.2.1 Common properties](#221-common-properties)
-    * [2.2.2 OpenAI properties](#222-openai-properties)
-    * [2.2.3 Ollama properties](#223-ollama-properties)
-    * [2.2.4 DeepL properties](#224-deepl-properties)
+    * [2.2.1 Ollama properties](#221-ollama-properties)
+    * [2.2.2 DeepL properties](#222-deepl-properties)
+    * [2.2.3 OpenAI properties](#223-openai-properties)
+    * [2.2.4 Anthropic properties](#224-anthropic-properties)
+    * [2.2.5 Gemini properties](#225-gemini-properties)
+    * [2.2.6 Zai properties](#226-zai-properties)
   * [2.3 Validation Adapter properties](#23-validation-adapter-properties)
 * [3. Usage](#3-usage)
   * [3.1 Running the application](#31-running-the-application)
@@ -51,7 +53,7 @@ Obtain a JDK version greater than 11. In the example below, Zulu OpenJDK 11 is u
 ---
 # 2. Configuration
 
-Start with the general configuration and then jump to the section of the adapter you want to use. 
+Start with the general configuration and then jump to the section of the adapter you want to use.
 
 ## 2.1 General properties
 
@@ -87,100 +89,28 @@ runModes=SYNC,TRANSLATE,REFORMAT
 
 ## 2.2 Translation Adapter properties
 
-### 2.2.1 Common properties
-
-#### 2.2.1.1 translation.adapter
-
-Specify which translation adapter to use. The following adapters are available:
-- OpenAI
-- Ollama
-- DeepL
+First, specify which translation adapter to use:
 
 ```properties
 translation.adapter=OpenAI
 ```
 
-#### 2.2.1.2 translation.adapter.maxAttempts
+Available adapters:
+- Manual (for testing purposes)
+- Ollama (local)
+- DeepL
+- OpenAI
+- Anthropic
+- Gemini
+- Zai
 
-Specify the maximum number of attempts, including the first attempt, to try to translate a text. If the maximum number of attempts is reached, the text will be skipped.
+Then, configure the adapter-specific properties below.
 
-```properties
-translation.adapter.maxAttempts=4
-```
+### 2.2.1 Ollama properties
 
-#### 2.2.1.3 translation.adapter.contextMessagesFilePath (optional)
+> [!NOTE] Ollama is supported but the translation quality (at least with the models I have tried) is nowhere near OpenAI's GPT-4.
 
-Specify the relative path (from where you execute the application) to the context messages file. This file contains the context messages that are used to translate the text. For details, see the [4.2 Context Message files](#42-context-message-files) section.
-
-```properties
-translation.adapter.contextMessagesFilePath=config/context/context-messages.json
-```
-
-#### 2.2.1.4 translation.adapter.maxHistorySize
-
-Specify the maximum number of past messages, that should be included with each API request. This is used to provide the LLMs with additional context information that can help to improve the translation quality. The number should be a multiple of 2, because the messages are grouped in pairs (user request, assistant response).
-
-⚠️ **Important**: Default is 0. Using many history messages can increase the cost with services like OpenAI.
-
-```properties
-translation.adapter.maxHistorySize=0
-```
-
-### 2.2.2 OpenAI properties
-
-#### 2.2.2.1 translation.adapter.openai.apiKey
-
-To use OpenAI, you must create an API key. Since OpenAI switched to a prepaid model, you may need to charge your account first.
-    
-```properties
-translation.adapter.openai.apiKey=sk-...
-```
-
-#### 2.2.2.2 translation.adapter.translation.openai.chat.model
-
-Specify the model to use for the translation requests.
-
-```properties
-translation.adapter.translation.openai.chat.model=gpt-4-turbo-preview
-```
-
-#### 2.2.2.3 translation.adapter.openai.chat.maxTokens
-
-Specify the upper limit of tokens. The requested tokens are calculated for each request and can be smaller than this number, but never exceed it.
-
-```properties
-translation.adapter.openai.chat.maxTokens=4000
-```
-
-#### 2.2.2.4 translation.adapter.openai.chat.initTemperature
-
-Specify the initial temperature for the translation requests. The temperature is used to control the randomness of the translation.
-
-```properties
-translation.adapter.openai.chat.initTemperature=0.2
-```
-
-#### 2.2.2.5 translation.adapter.openai.chat.temperatureIncrement
-
-Specify the temperature increment for the translation request after a failed attempt.
-
-```properties
-translation.adapter.openai.chat.temperatureIncrement=0.6
-```
-
-#### 2.2.2.6 translation.adapter.openai.chat.systemMessage
-
-Specify the system message that is used to start the conversation with the LLMs. For more information, see the [4.1 System Message](#41-system-message) section.
-
-```properties
-translation.adapter.openai.chat.systemMessage=Translate the input text to ${targetLanguage}. If you can not translate the input, or you are unsure, respond with <ERROR>.
-```
-
-### 2.2.3 Ollama properties
-
-⚠️ Note: Ollama is supported but the translation quality (at least with the models I have tried) is nowhere near OpenAI's GPT-4.
-
-#### 2.2.3.1 translation.adapter.ollama.scheme
+#### 2.2.1.1 translation.adapter.ollama.scheme
 
 (Optional) Specify the http scheme of the Ollama API.
 
@@ -188,7 +118,7 @@ translation.adapter.openai.chat.systemMessage=Translate the input text to ${targ
 translation.adapter.ollama.scheme=http
 ```
 
-#### 2.2.3.2 translation.adapter.ollama.host
+#### 2.2.1.2 translation.adapter.ollama.host
 
 (Optional) Specify the host of the Ollama API.
 
@@ -196,7 +126,7 @@ translation.adapter.ollama.scheme=http
 translation.adapter.ollama.host=localhost
 ```
 
-#### 2.2.3.3 translation.adapter.ollama.port
+#### 2.2.1.3 translation.adapter.ollama.port
 
 (Optional) Specify the http port of the Ollama API.
 
@@ -204,7 +134,7 @@ translation.adapter.ollama.host=localhost
 translation.adapter.ollama.port=11434
 ```
 
-#### 2.2.3.4 translation.adapter.ollama.model
+#### 2.2.1.4 translation.adapter.ollama.model
 
 Specify the model to use for the translation requests.
 
@@ -212,7 +142,61 @@ Specify the model to use for the translation requests.
 translation.adapter.ollama.model=llama3:instruct
 ```
 
-#### 2.2.3.5 translation.adapter.ollama.chat.systemMessage
+#### 2.2.1.5 translation.adapter.ollama.chat.systemMessage
+
+Specify the system message that is used to start the conversation with the LLMs.
+
+```properties
+translation.adapter.ollama.chat.systemMessage=Translate the input text to ${targetLanguage}. If you can not translate the input, or you are unsure, respond with <ERROR>.
+```
+
+### 2.2.2 DeepL properties
+
+WIP
+
+### 2.2.3 OpenAI properties
+
+#### 2.2.3.1 translation.adapter.openai.apiKey
+
+To use OpenAI, you must create an API key. Since OpenAI switched to a prepaid model, you may need to charge your account first.
+
+```properties
+translation.adapter.openai.apiKey=sk-...
+```
+
+#### 2.2.3.2 translation.adapter.openai.chat.model
+
+Specify the model to use for the translation requests.
+
+```properties
+translation.adapter.openai.chat.model=gpt-4-turbo-preview
+```
+
+#### 2.2.3.3 translation.adapter.openai.chat.maxTokens
+
+Specify the upper limit of tokens.
+
+```properties
+translation.adapter.openai.chat.maxTokens=4000
+```
+
+#### 2.2.3.4 translation.adapter.openai.chat.initTemperature
+
+Specify the initial temperature for the translation requests.
+
+```properties
+translation.adapter.openai.chat.initTemperature=0.2
+```
+
+#### 2.2.3.5 translation.adapter.openai.chat.temperatureIncrement
+
+Specify the temperature increment for the translation request after a failed attempt.
+
+```properties
+translation.adapter.openai.chat.temperatureIncrement=0.6
+```
+
+#### 2.2.3.6 translation.adapter.openai.chat.systemMessage
 
 Specify the system message that is used to start the conversation with the LLMs. For more information, see the [4.1 System Message](#41-system-message) section.
 
@@ -220,9 +204,169 @@ Specify the system message that is used to start the conversation with the LLMs.
 translation.adapter.openai.chat.systemMessage=Translate the input text to ${targetLanguage}. If you can not translate the input, or you are unsure, respond with <ERROR>.
 ```
 
-### 2.2.4 DeepL properties
+### 2.2.4 Anthropic properties
 
-WIP
+Anthropic provides access to Claude models via their API.
+
+#### 2.2.4.1 translation.adapter.anthropic.apiKey
+
+To use Anthropic, you must create an API key from their console.
+
+```properties
+translation.adapter.anthropic.apiKey=sk-ant-...
+```
+
+#### 2.2.4.2 translation.adapter.anthropic.model
+
+Specify the model to use for the translation requests.
+
+```properties
+translation.adapter.anthropic.model=claude-sonnet-4-5
+```
+
+#### 2.2.4.3 translation.adapter.anthropic.maxTokens
+
+Specify the upper limit of tokens.
+
+```properties
+translation.adapter.anthropic.maxTokens=2000
+```
+
+#### 2.2.4.4 translation.adapter.anthropic.initTemperature
+
+Specify the initial temperature for the translation requests.
+
+```properties
+translation.adapter.anthropic.initTemperature=0.2
+```
+
+#### 2.2.4.5 translation.adapter.anthropic.temperatureIncrement
+
+Specify the temperature increment for the translation request after a failed attempt.
+
+```properties
+translation.adapter.anthropic.temperatureIncrement=0.3
+```
+
+#### 2.2.4.6 translation.adapter.anthropic.systemMessage
+
+Specify the system message that is used to start the conversation with the LLMs.
+
+```properties
+translation.adapter.anthropic.systemMessage=Translate the input text to ${targetLanguage}. If you can not translate the input, or you are unsure, respond with <ERROR>.
+```
+
+### 2.2.5 Gemini properties
+
+Google's Gemini API provides access to their language models.
+
+#### 2.2.5.1 translation.adapter.gemini.apiKey
+
+To use Gemini, you must create an API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
+
+```properties
+translation.adapter.gemini.apiKey=AIza...
+```
+
+#### 2.2.5.2 translation.adapter.gemini.model
+
+Specify the model to use for the translation requests.
+
+```properties
+translation.adapter.gemini.model=gemini-2.0-flash-exp
+```
+
+#### 2.2.5.3 translation.adapter.gemini.maxOutputTokens
+
+Specify the upper limit of tokens.
+
+```properties
+translation.adapter.gemini.maxOutputTokens=2000
+```
+
+#### 2.2.5.4 translation.adapter.gemini.initTemperature
+
+Specify the initial temperature for the translation requests.
+
+```properties
+translation.adapter.gemini.initTemperature=0.2
+```
+
+#### 2.2.5.5 translation.adapter.gemini.temperatureIncrement
+
+Specify the temperature increment for the translation request after a failed attempt.
+
+```properties
+translation.adapter.gemini.temperatureIncrement=0.6
+```
+
+#### 2.2.5.6 translation.adapter.gemini.systemMessage
+
+Specify the system message that is used to start the conversation with the LLMs.
+
+```properties
+translation.adapter.gemini.systemMessage=Translate the input text to ${targetLanguage}. If you can not translate the input, or you are unsure, respond with <ERROR>.
+```
+
+### 2.2.6 Zai properties
+
+Z.ai provides access to Chinese language models (GLM) via their API.
+
+#### 2.2.6.1 translation.adapter.zai.apiKey
+
+To use Zai, you must create an API key from their platform.
+
+```properties
+translation.adapter.zai.apiKey=...
+```
+
+#### 2.2.6.2 translation.adapter.zai.chat.model
+
+Specify the model to use for the translation requests.
+
+```properties
+translation.adapter.zai.chat.model=glm-4.7
+```
+
+#### 2.2.6.3 translation.adapter.zai.useCodingPlan
+
+Use the Coding Plan endpoint (subscription-based) instead of Standard API (pay-per-token).
+
+```properties
+translation.adapter.zai.useCodingPlan=true
+```
+
+#### 2.2.6.4 translation.adapter.zai.chat.maxTokens
+
+Specify the upper limit of tokens.
+
+```properties
+translation.adapter.zai.chat.maxTokens=4000
+```
+
+#### 2.2.6.5 translation.adapter.zai.chat.initTemperature
+
+Specify the initial temperature for the translation requests.
+
+```properties
+translation.adapter.zai.chat.initTemperature=0.2
+```
+
+#### 2.2.6.6 translation.adapter.zai.chat.temperatureIncrement
+
+Specify the temperature increment for the translation request after a failed attempt.
+
+```properties
+translation.adapter.zai.chat.temperatureIncrement=0.6
+```
+
+#### 2.2.6.7 translation.adapter.zai.chat.systemMessage
+
+Specify the system message that is used to start the conversation with the LLMs.
+
+```properties
+translation.adapter.zai.chat.systemMessage=Translate the input text to ${targetLanguage}. If you can not translate the input, or you are unsure, respond with <ERROR>.
+```
 
 ## 2.3 Validation Adapter properties
 
@@ -253,18 +397,21 @@ validation.adapter.configurationFile=stardewvalley.json
 ---
 # 3. Usage
 
-⚠️ Before proceeding, make sure that you have followed the sections:
-* [1. Requirements](#1-requirements)
-  * [1.1 Java Development Kit (JDK)](#11-java-development-kit-jdk)
-  * [1.2 Download sv-i18n-translator](#12-download-sv-i18n-translator)
-* [2. Configuration](#2-configuration)
-  * [2.1 General properties](#21-general-properties)
-  * [2.2 Translation Adapter properties](#22-translation-adapter-properties)
-    * [2.2.1 Common properties](#221-common-properties)
-    * **And at least one of** 
-    * [2.2.2 OpenAI properties](#222-openai-properties)
-    * [2.2.3 Ollama properties](#223-ollama-properties)
-    * [2.2.4 DeepL properties](#224-deepl-properties)
+> [!TIP]
+> Before proceeding, make sure that you have followed the sections:
+> * [1. Requirements](#1-requirements)
+>   * [1.1 Java Development Kit (JDK)](#11-java-development-kit-jdk)
+>   * [1.2 Download sv-i18n-translator](#12-download-sv-i18n-translator)
+> * [2. Configuration](#2-configuration)
+>   * [2.1 General properties](#21-general-properties)
+>   * [2.2 Translation Adapter properties](#22-translation-adapter-properties)
+>     * **And at least one of**
+>     * [2.2.1 Ollama properties](#221-ollama-properties)
+>     * [2.2.2 DeepL properties](#222-deepl-properties)
+>     * [2.2.3 OpenAI properties](#223-openai-properties)
+>     * [2.2.4 Anthropic properties](#224-anthropic-properties)
+>     * [2.2.5 Gemini properties](#225-gemini-properties)
+>     * [2.2.6 Zai properties](#226-zai-properties)
 
 The examples below will assume that you have a local-openai.properties file under `src/main/resources/local-openai.properties` with the following content (comments omitted for brevity):
 
@@ -277,17 +424,8 @@ runModes=SYNC,REVALIDATE,TRANSLATE,REFORMAT
 translation.adapter=OpenAI
 translation.adapter.maxAttempts=4
 
-# Path to context messages file.
-# Note: When using OpenAI, this can increase the cost by a lot.
-#translation.adapter.contextMessagesFilePath=config/context/context-messages-de.json
-
-# Maximum number of past messages to be included in the API request.
-# Should be a multiple of 2 (to include always the translation request and translated response).
-# Note: When using OpenAI, this can increase the cost by a lot.
-#translation.adapter.maxHistorySize=0
-
 translation.adapter.openai.apiKey=sk-...
-translation.adapter.translation.openai.chat.model=gpt-4-turbo-preview
+translation.adapter.openai.chat.model=gpt-4-turbo-preview
 translation.adapter.openai.chat.maxTokens=4000
 translation.adapter.openai.chat.initTemperature=0.2
 translation.adapter.openai.chat.temperatureIncrement=0.6
@@ -297,7 +435,51 @@ validation.adapter=StardewValley
 validation.adapter.configurationFile=stardewvalley.json
 ```
 
-If you want to use Ollama, here is an example for `src/main/resources/local-ollama.properties`:
+For Anthropic, use `local-anthropic.properties`:
+
+```properties
+originalFilePath=src/test/resources/data/text/default.json
+targetLanguage=German
+
+runModes=SYNC,REVALIDATE,TRANSLATE,REFORMAT
+
+translation.adapter=Anthropic
+translation.adapter.maxAttempts=4
+
+translation.adapter.anthropic.apiKey=sk-ant-...
+translation.adapter.anthropic.model=claude-sonnet-4-5
+translation.adapter.anthropic.maxTokens=2000
+translation.adapter.anthropic.initTemperature=0.2
+translation.adapter.anthropic.temperatureIncrement=0.3
+translation.adapter.anthropic.systemMessage=Translate the input text to ${targetLanguage}.\nThe input is a text from the video game Stardew Valley.\nPreserve all special characters.\nPreserve all single quotes.\nPreserve all double quotes.\nDo not change anything that is surrounded by curly brackets.\nDo not change words that start with %.\nDo not change anything of this list: $neutral, $a, $b, $c, $d, $e, $h, $k, $l, $p, $q, $r, $s, $u, $y.\nRespond only with the translated text.\nUse the informal 'Du' form of address instead of formal 'Sie'.\nIf you can not translate the input, or you are unsure, respond with <ERROR>.
+
+validation.adapter=StardewValley
+validation.adapter.configurationFile=stardewvalley.json
+```
+
+For Gemini, use `local-gemini.properties`:
+
+```properties
+originalFilePath=src/test/resources/data/text/default.json
+targetLanguage=German
+
+runModes=SYNC,REVALIDATE,TRANSLATE,REFORMAT
+
+translation.adapter=Gemini
+translation.adapter.maxAttempts=4
+
+translation.adapter.gemini.apiKey=AIza...
+translation.adapter.gemini.model=gemini-2.0-flash-exp
+translation.adapter.gemini.maxOutputTokens=2000
+translation.adapter.gemini.initTemperature=0.2
+translation.adapter.gemini.temperatureIncrement=0.6
+translation.adapter.gemini.systemMessage=Translate the input text to ${targetLanguage}.\nThe input is a text from the video game Stardew Valley.\nPreserve all special characters.\nPreserve all single quotes.\nPreserve all double quotes.\nDo not change anything that is surrounded by curly brackets.\nDo not change words that start with %.\nDo not change anything of this list: $neutral, $a, $b, $c, $d, $e, $h, $k, $l, $p, $q, $r, $s, $u, $y.\nRespond only with the translated text, nothing else.\nDo not provide explanations, alternatives, or multiple options.\nUse the informal 'Du' form of address instead of formal 'Sie'.\nIf you can not translate the input, or you are unsure, respond with <ERROR>.
+
+validation.adapter=StardewValley
+validation.adapter.configurationFile=stardewvalley.json
+```
+
+For Ollama, here is an example for `src/main/resources/local-ollama.properties`:
 
 ```properties
 originalFilePath=src/test/resources/data/text/default.json
@@ -328,6 +510,8 @@ Open a terminal and navigate to the root directory of the project. Then execute 
 java -jar target/sv-i18n-translator.jar --spring.config.location=src/main/resources/local-openai.properties
 ```
 
+Replace `local-openai.properties` with your chosen config file (`local-anthropic.properties`, `local-gemini.properties`, `local-ollama.properties`, etc.).
+
 ---
 # 4. Appendix
 
@@ -335,10 +519,14 @@ java -jar target/sv-i18n-translator.jar --spring.config.location=src/main/resour
 
 Improve the translation quality by providing the LLMs with additional context information. The system message is used to start the conversation with the LLMs. The system message should contain information about the input text, the target language, and any special instructions that the LLMs should follow.
 
-Mostly tested with OpenAI.
+Set the system message for your chosen adapter (examples from [2.2 Translation Adapter properties](#22-translation-adapter-properties)):
 
 ```properties
 translation.adapter.openai.chat.systemMessage=Translate the input text to ${targetLanguage}.\nThe input is a text from the video game Stardew Valley.\nPreserve all special characters.\nPreserve all single quotes.\nPreserve all double quotes.\nDo not change anything that is surrounded by curly brackets.\nDo not change words that start with %.\nDo not change anything of this list: $neutral, $a, $b, $c, $d, $e, $h, $k, $l, $p, $q, $r, $s, $u, $y.\nRespond only with the translated text.\nUse the informal 'Du' form of address instead of formal 'Sie'.\nIf you can not translate the input, or you are unsure, respond with <ERROR>.
+
+translation.adapter.anthropic.systemMessage=...
+
+translation.adapter.gemini.systemMessage=...
 ```
 
 ## 4.2 Context Message files
@@ -347,9 +535,9 @@ Location: `config/context`
 
 Context message files are JSON files that contain example messages. These context messages are included in the API requests to translate the text. The context messages are used to provide the LLMs with additional context information that can help to improve the translation quality.
 
-⚠️ **Important**: The context messages must be written in the language that you want to translate the text to.
+> [!IMPORTANT] The context messages must be written in the language that you want to translate the text to.
 
-⚠️ **Important**: Using many context messages can increase the cost with services like OpenAI.
+> [!IMPORTANT] Using many context messages can increase the cost with paid LLM services.
 
 ```json
 {
@@ -377,10 +565,10 @@ Context message files are JSON files that contain example messages. These contex
 
 ## 4.3 Validation Adapter configuration files
 
-Location: `src/main/resources/validation`\
+Location: `src/main/resources/validation`
 Will be moved to `config/validation` in the future.
 
-The validation adapter configuration files contain rules that will be checked by the validation adapter to decide if a translation should be accepted or rejected. A rejection will lead to the translation being retried until `translation.adapter.maxAttempts` is reached. Translation adapters can decide to handle retries differently, e.g. increase randomness or temperature. 
+The validation adapter configuration files contain rules that will be checked by the validation adapter to decide if a translation should be accepted or rejected. A rejection will lead to the translation being retried until `translation.adapter.maxAttempts` is reached. Translation adapters can decide to handle retries differently, e.g. increase randomness or temperature.
 
 #### 4.3.1 rejectionList
 
