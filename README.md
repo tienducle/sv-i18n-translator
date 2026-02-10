@@ -29,7 +29,7 @@ The tool is meant to be used as a dev tool by mod creators. It still has some ro
 
 ### Requirements
 
-- JDK > 11
+- JDK > 17
 - Maven 3.x
 - API key for your chosen translation service:
   - OpenAI: https://platform.openai.com/api-keys
