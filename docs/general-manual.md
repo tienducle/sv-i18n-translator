@@ -17,6 +17,7 @@
     * [2.2.5 Anthropic properties](#225-anthropic-properties)
     * [2.2.6 Gemini properties](#226-gemini-properties)
     * [2.2.7 Zai properties](#227-zai-properties)
+    * [2.2.8 Moonshot properties](#228-moonshot-properties)
   * [2.3 Validation Adapter properties](#23-validation-adapter-properties)
 * [3. Usage](#3-usage)
   * [3.1 Running the application](#31-running-the-application)
@@ -104,6 +105,7 @@ Available adapters:
 - Anthropic
 - Gemini
 - Zai
+- Moonshot
 
 Then, configure the adapter-specific properties below.
 
@@ -120,6 +122,7 @@ Specify which translation adapter to use. The following adapters are available:
 - Anthropic
 - Gemini
 - Zai
+- Moonshot
 
 ```properties
 translation.adapter=OpenAI
@@ -359,7 +362,7 @@ translation.adapter.gemini.systemMessage=Translate the input text to ${targetLan
 
 ### 2.2.7 Zai properties
 
-Z.ai provides access to Chinese language models (GLM) via their API.
+Z.ai provides access to GLM via their API.
 
 #### 2.2.7.1 translation.adapter.zai.apiKey
 
@@ -417,6 +420,52 @@ Specify the system message that is used to start the conversation with the LLMs.
 translation.adapter.zai.chat.systemMessage=Translate the input text to ${targetLanguage}. If you can not translate the input, or you are unsure, respond with <ERROR>.
 ```
 
+### 2.2.8 Moonshot properties
+
+Moonshot AI provides access to Kimi language models via their OpenAI-compatible API.
+
+#### 2.2.8.1 translation.adapter.moonshot.apiKey
+
+To use Moonshot, you must create an API key from [their platform](https://platform.moonshot.ai).
+
+```properties
+translation.adapter.moonshot.apiKey=sk-...
+```
+
+#### 2.2.8.2 translation.adapter.moonshot.chat.model
+
+Specify the model to use for the translation requests.
+
+```properties
+translation.adapter.moonshot.chat.model=kimi-k2-turbo-preview
+```
+
+#### 2.2.8.3 translation.adapter.moonshot.chat.initTemperature
+
+Specify the initial temperature for the translation requests.
+
+> [!NOTE] Some Moonshot models, like the kimi-k2.5 model only support a fixed temperature of 1.0.
+
+```properties
+translation.adapter.moonshot.chat.initTemperature=0.3
+```
+
+#### 2.2.8.4 translation.adapter.moonshot.chat.temperatureIncrement
+
+Specify the temperature increment for the translation request after a failed attempt.
+
+```properties
+translation.adapter.moonshot.chat.temperatureIncrement=0.2
+```
+
+#### 2.2.8.5 translation.adapter.moonshot.chat.systemMessage
+
+Specify the system message that is used to start the conversation with the LLMs.
+
+```properties
+translation.adapter.moonshot.chat.systemMessage=Translate the input text to ${targetLanguage}. If you can not translate the input, or you are unsure, respond with <ERROR>.
+```
+
 ## 2.3 Validation Adapter properties
 
 #### 2.3.1 validation.adapter
@@ -462,6 +511,7 @@ validation.adapter.configurationFile=stardewvalley.json
 >     * [2.2.5 Anthropic properties](#225-anthropic-properties)
 >     * [2.2.6 Gemini properties](#226-gemini-properties)
 >     * [2.2.7 Zai properties](#227-zai-properties)
+>     * [2.2.8 Moonshot properties](#228-moonshot-properties)
 
 The examples below will assume that you have a local-openai.properties file under `src/main/resources/local-openai.properties` with the following content (comments omitted for brevity):
 
@@ -529,6 +579,27 @@ validation.adapter=StardewValley
 validation.adapter.configurationFile=stardewvalley.json
 ```
 
+For Moonshot, use `local-moonshot.properties`:
+
+```properties
+originalFilePath=src/test/resources/data/text/default.json
+targetLanguage=German
+
+runModes=SYNC,REVALIDATE,TRANSLATE,REFORMAT
+
+translation.adapter=Moonshot
+translation.adapter.maxAttempts=4
+
+translation.adapter.moonshot.apiKey=sk-...
+translation.adapter.moonshot.chat.model=kimi-k2-turbo-preview
+translation.adapter.moonshot.chat.initTemperature=0.3
+translation.adapter.moonshot.chat.temperatureIncrement=0.2
+translation.adapter.moonshot.chat.systemMessage=Translate the input text to ${targetLanguage}.\nThe input is a text from the video game Stardew Valley.\nPreserve all special characters.\nPreserve all single quotes.\nPreserve all double quotes.\nDo not change anything that is surrounded by curly brackets.\nDo not change words that start with %.\nDo not change anything of this list: $neutral, $a, $b, $c, $d, $e, $h, $k, $l, $p, $q, $r, $s, $u, $y.\nRespond only with the translated text.\nUse the informal 'Du' form of address instead of formal 'Sie'.\nIf you can not translate the input, or you are unsure, respond with <ERROR>.
+
+validation.adapter=StardewValley
+validation.adapter.configurationFile=stardewvalley.json
+```
+
 For Ollama, here is an example for `src/main/resources/local-ollama.properties`:
 
 ```properties
@@ -560,7 +631,7 @@ Open a terminal and navigate to the root directory of the project. Then execute 
 java -jar target/sv-i18n-translator.jar --spring.config.location=src/main/resources/local-openai.properties
 ```
 
-Replace `local-openai.properties` with your chosen config file (`local-anthropic.properties`, `local-gemini.properties`, `local-ollama.properties`, etc.).
+Replace `local-openai.properties` with your chosen config file (`local-anthropic.properties`, `local-gemini.properties`, `local-moonshot.properties`, `local-ollama.properties`, etc.).
 
 ---
 # 4. Appendix

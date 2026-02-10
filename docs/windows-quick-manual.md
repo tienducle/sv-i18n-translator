@@ -4,12 +4,13 @@
 
 ### LLM API key
 
-The bundled scripts are configured to translate the input text to German using OpenAI API (gpt-5.1). Other adapters are available (Anthropic, Gemini, Zai, Ollama). You will need an API key for the service you choose to use.
+The bundled scripts are configured to translate the input text to German using OpenAI API (gpt-5.1). Other adapters are available (Anthropic, Gemini, Zai, Moonshot, Ollama). You will need an API key for the service you choose to use.
 
 - **OpenAI**: https://platform.openai.com/api-keys (prepaid model)
 - **Anthropic**: https://console.anthropic.com/settings/keys
 - **Gemini**: https://aistudio.google.com/app/apikey
 - **Zai**: https://open.bigmodel.cn/usercenter/apikeys
+- **Moonshot**: https://platform.moonshot.ai
 
 ### Java Development Kit (JDK)
 
@@ -74,6 +75,14 @@ The command below will just run the translation on a bundled test file.
 "C:\Users\yourusername\Downloads\sv-i18n-translator-main\src\test\resources\data\text\default.json" `
 "German" `
 "your-gemini-key"
+```
+
+**For Moonshot:**
+```powershell
+.\translate.bat `
+"C:\Users\yourusername\Downloads\sv-i18n-translator-main\src\test\resources\data\text\default.json" `
+"German" `
+"your-moonshot-key"
 ```
 
 If you want to translate your own files, replace the paths accordingly.

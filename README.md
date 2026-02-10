@@ -19,6 +19,7 @@ The tool is meant to be used as a dev tool by mod creators. It still has some ro
   - **Anthropic** - Uses claude-sonnet-4-5 by default
   - **Gemini** - Uses gemini-3-pro-preview by default
   - **Zai** - Uses glm-4.7 by default
+  - **Moonshot** - Uses kimi-k2.5 by default
   - **DeepL** - Professional translation service
   - **Ollama** - Local LLM via REST API
   - **Manual** - For testing purposes
@@ -36,6 +37,7 @@ The tool is meant to be used as a dev tool by mod creators. It still has some ro
   - Anthropic: https://console.anthropic.com/settings/keys
   - Gemini: https://aistudio.google.com/app/apikey
   - Zai: https://open.bigmodel.cn/usercenter/apikeys
+  - Moonshot: https://platform.moonshot.ai
   - DeepL: https://www.deepl.com/pro-api
 
 ### Run using scripts
@@ -86,6 +88,8 @@ export ANTHROPIC_API_KEY="sk-..."    # For Anthropic
 export GEMINI_API_KEY="..."          # For Gemini
 # or
 export ZAI_API_KEY="..."             # For Zai
+# or
+export MOONSHOT_API_KEY="..."        # For Moonshot
 
 ./translate.sh "../../src/test/resources/data/text/default.json" "German"
 ```
